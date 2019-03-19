@@ -16,6 +16,7 @@
 // See         ReadMe.txt for references
 //
 
+///TEST COMIT FOR GITHUB
 #include "SPI.h"
 #include "TLC_lib.h"
 #include "MUX_lib.h"
@@ -74,9 +75,9 @@ void setup()
     Serial.begin(9800);
     Serial.println("hello");
 
-    
+
     timer0 = millis();
-    
+
 
     delay(200);
     mux_init();
@@ -372,9 +373,9 @@ void loop()
 
         key = 7;
     }
-    
+
  char c;
-  
+
   if (keyboard.available()){
     c=keyboard.read();
   Serial.print(c);
@@ -383,7 +384,7 @@ void loop()
 
     if (c == 'w'){
         for (int i = 0; i < 12; i++){
-            
+
             moveRow(i, 1, 1, true, 0, 0xF00, 0, 11);
             c = '[';
         }
@@ -396,28 +397,28 @@ void loop()
     }
     else if (c == 'a'){
         for (int i = 0; i < 12; i++){
-            
+
             moveRow(1, i, 1, true, 2, 0xF00, 0, 11);
             c = '[';
         }
     }
     else if (c == 'd'){
         for (int i = 0; i < 12; i++){
-            
+
             moveRow(10, i, 1, true, 4, 0xF00, 0, 11);
             c = '[';
         }
     }
-    
-    
+
+
     if (millis() - timer0 > delayTime){
 
         set_led_pk(y, x, 11, 0xFFF);
         set_led_pk(t, z, 11, 0xFFF);
-        
+
         for (int i = 0; i < 12; i++){
             for (int j = 0; j < 12; j++){
-              
+
                 moveRow(i, j, 1, false, 3, 0xFFF, 0, 11);
             }
         }
