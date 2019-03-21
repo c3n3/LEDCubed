@@ -36,26 +36,48 @@
 #endif // end IDE
 
 #include "PS2Keyboard.h"
-
-
 //#include "PS2Keyboard.h"
 //hello from xcode
+enum mainStates {ANIMATIONS, GAMES, TOP};
+
+/**************************************************************************
+ *
+ *
+ *
+ *  Declare all global functions below
+ *
+ *
+ *
+ **************************************************************************/
 
 void set_led( uint8_t x, uint8_t y, uint8_t z, uint16_t r, uint16_t g, uint16_t b);
 void drawBall( int x, int y, int z, uint16_t color);
 void bounceBall(int iterations);
+void dodgeGame();
+void lightCube();
+void snow();
 
+void (*appFunction[3])() { lightCube, dodgeGame, snow };
+//String appFunctions[] = {"dodgeGame"};
+/**************************************************************************
+ *
+ *
+ *
+ *  Decalare all global variables below
+ *
+ *
+ *
+ **************************************************************************/
+//escape corispondes to the
 
+//mainStates state = TOP;
 
 PS2Keyboard keyboard;
 volatile uint8_t     gs_buf[NUM_BYTES];  //Buffer written to TLCs over SPI (12 bit color values)
 volatile uint16_t    px_buf[NUM_LEDS];   //Pixel buffer storing each LED color as a 16 bit value ( RRRRRGGGGGGBBBBB )
+boolean kill = false;
 
-int animation = 0;
-int key = 9;
-int x = 5;
-int y = 5;
-int z = 5;
+
 
 //uint8_t x;
 //uint8_t y;
@@ -68,15 +90,23 @@ uint32_t timer0;
 
 int count = 0;
 
+
+/**************************************************************************
+ *
+ *
+ *
+ *  Setup below
+ *
+ *
+ *
+ **************************************************************************/
+
 void setup()
 {
     delay(1000);
     keyboard.begin(15, 21);
     Serial.begin(9800);
     Serial.println("hello");
-
-
-    timer0 = millis();
 
 
     delay(200);
@@ -96,38 +126,75 @@ void setup()
 
 }
 
+/**************************************************************************
+ *
+ *
+ *
+ *  Functions to aid animations/games below
+ *
+ *
+ *
+ **************************************************************************/
+
+
 //Coordinates and RGB values and buffer. RGB range 0-255
 void set_led( uint8_t x, uint8_t y, uint8_t z, uint16_t r, uint16_t g, uint16_t b){
     px_buf[ z * NUM_LEDS_LYR + NUM_LEDS_DIM * x + y] = ((r & 0x00F8) << 8 ) |
     ((g & 0x00FC) << 3 ) |
     ((b & 0x00F8) >> 3 );
 }
+
+/***************************************************************************
+ *
+ *   Sub Seperator
+ *
+ ***************************************************************************/
+
 //packs a rgb color into one number
 uint16_t pk_color(uint16_t r, uint16_t g, uint16_t b) {
     return ((r & 0x00F8) << 8 ) |
     ((g & 0x00FC) << 3 ) |
     ((b & 0x00F8) >> 3 );
 }
-uint16_t firstCol = pk_color(255, 140, 0);
-uint16_t secondCol = pk_color(0, 0, 255);
-uint16_t thirdCol = pk_color(0, 255, 0);
-uint16_t fourthCol = pk_color(255, 50, 0);
+
+/***************************************************************************
+ *
+ *   Sub Seperator
+ *
+ ***************************************************************************/
 
 //self explainatory
 void clearCube(){
     memset((uint16_t *)px_buf, 0x0000, NUM_LEDS * 2);
 }
 
+/***************************************************************************
+ *
+ *   Sub Seperator
+ *
+ ***************************************************************************/
+
 //houses the edata for the whole cube
 uint16_t LEDArray(uint8_t x, uint8_t y, uint8_t z){
     return px_buf[ z * NUM_LEDS_LYR + NUM_LEDS_DIM * x + y];
 }
+
+/***************************************************************************
+ *
+ *   Sub Seperator
+ *
+ ***************************************************************************/
 
 //Set led with packed color value
 void set_led_pk( uint8_t x, uint8_t y, uint8_t z, uint16_t c){
     px_buf[ z * NUM_LEDS_LYR + NUM_LEDS_DIM * x + y] = c;
 }
 
+/***************************************************************************
+ *
+ *   Sub Seperator
+ *
+ ***************************************************************************/
 
 //this function switches which orientation you may look at the cube, the  coordinates go as follows, the face you look at for each direction, the reletive 'z' coordinate is the third one, the reletive 'x' is either the true z or x direction, and the second coordinate is always the reletive 'y'
 uint16_t directionalCubeArray(uint8_t firstCord, uint8_t secondCord, uint8_t thirdCord, uint16_t color, uint8_t direction, boolean setLED){
@@ -185,6 +252,12 @@ uint16_t directionalCubeArray(uint8_t firstCord, uint8_t secondCord, uint8_t thi
 
 
 }
+
+/***************************************************************************
+ *
+ *   Sub Seperator
+ *
+ ***************************************************************************/
 
 void moveRow(int firstCord, int secondCord, uint16_t color, boolean collective, int direction, uint16_t specificColor, uint8_t start, uint8_t end){
 
@@ -250,6 +323,11 @@ void moveRow(int firstCord, int secondCord, uint16_t color, boolean collective, 
 
 }
 
+/***************************************************************************
+ *
+ *   Sub Seperator
+ *
+ ***************************************************************************/
 
 //DrawFigure
 //Coordinate 1: (x1,y2,z2)
@@ -349,93 +427,267 @@ void DrawFigure(int x1, int y1, int z1, int x2, int y2, int z2) {
     }
 }
 
+/**************************************************************************
+ *                                                                        *
+ * ************************************************************************
+ *                                                                        *
+ *  Main Switch Function below                                            * ***************************
+ *                                                                        *
+ * ************************************************************************
+ *                                                                        *
+ **************************************************************************/
 
+void mainSwitch(mainStates state) {
+    int i;
+    while(true) {
+        char c = ']';
+        
+        if (keyboard.available()) {
+            c = keyboard.read();
+            i = c - '0';
+        }
+        if (c != ']') {
+    switch (state) {
+            int y;
+        case TOP:
+            
+            y=0;
+            
+            break;
+            
+        case ANIMATIONS:
+            
+            
+            
+            
+            break;
+            
+        case GAMES:
+            if (i < 3 && i > -1){
+            appFunction[i]();
+            }
+            break;
+        }
+    }
+            c = ']';
+}
+}
 
+/**************************************************************************
+ *
+ *
+ *
+ *  The loop call
+ *
+ *
+ *
+ **************************************************************************/
 
 
 
 // Add loop code
 void loop()
 {
-
+    mainSwitch(GAMES);
   //this is curently just a simple 'dodge' game
-    int delayTime = 120;
+    
+} //end loop
+
+
+/**************************************************************************
+ *
+ *
+ *
+ *  all sub function below, all are self contained 'apps' called within the Main Switch function (must be declared within the two areas up top too.
+ *
+ *
+ *
+ **************************************************************************/
+
+
+void dodgeGame() {
+    
+    uint32_t timer0 = millis();
+    uint8_t key = 0;
+    while (!kill){
+   
+    uint8_t delayTime = 120;
     int x = rand() % 12;
     int y = rand() % 12;
     int z = rand() % 12;
     int t = rand() % 12;
-
+    
     if (key != 7){
         set_led_pk(5, 5, 1, 0xF00);
         set_led_pk(6, 5, 1, 0xF00);
         set_led_pk(5, 6, 1, 0xF00);
         set_led_pk(6, 6, 1, 0xF00);
-
+        
         key = 7;
     }
-
- char c;
-
-  if (keyboard.available()){
-    c=keyboard.read();
-  Serial.print(c);
-
-  }
-
-    if (c == 'w'){
+    
+    char c;
+    
+    if (keyboard.available()){
+        
+        c=keyboard.read();
+        if (c == PS2_ESC) {
+            kill = true;
+        }
+    }
+    
+    if (c == PS2_UPARROW){
         for (int i = 0; i < 12; i++){
-
+            
             moveRow(i, 1, 1, true, 0, 0xF00, 0, 11);
             c = '[';
         }
     }
-    else if (c == 's'){
+    else if (c == PS2_DOWNARROW){
         for (int i = 0; i < 12; i++){
             moveRow(i, 1, 1, true, 5, 0xF00, 0, 11);
             c = '[';
         }
     }
-    else if (c == 'a'){
+    else if (c == PS2_LEFTARROW){
         for (int i = 0; i < 12; i++){
-
+            
             moveRow(1, i, 1, true, 2, 0xF00, 0, 11);
             c = '[';
         }
     }
-    else if (c == 'd'){
+    else if (c == PS2_RIGHTARROW){
         for (int i = 0; i < 12; i++){
-
+            
             moveRow(10, i, 1, true, 4, 0xF00, 0, 11);
             c = '[';
         }
     }
-
-
+    
+    
     if (millis() - timer0 > delayTime){
-
+        
         set_led_pk(y, x, 11, 0xFFF);
         set_led_pk(t, z, 11, 0xFFF);
-
+        
         for (int i = 0; i < 12; i++){
             for (int j = 0; j < 12; j++){
-
+                
                 moveRow(i, j, 1, false, 3, 0xFFF, 0, 11);
             }
         }
-     animation = (animation+1) % 5;
-     timer0 += delayTime;
-   }
-} //end loop
+        
+    }
+    
+    }
+    kill = false;
+    clearCube();
+}
 
-/*
- void pk_color(uint16_t r, uint16_t g, uint16_t b){
- return ((r & 0x00F8) << 8 ) |
- ((g & 0x00FC) << 3 ) |
- ((b & 0x00F8) >> 3 );
- }*/
+/***************************************************************************
+ *
+ *   Sub Seperator
+ *
+ ***************************************************************************/
+
+void lightCube() {
+    while (!kill) {
+        char c;
+        
+        if (keyboard.available()){
+            
+            c=keyboard.read();
+            if (c == PS2_ESC) {
+                kill = true;
+            }
+        }
+        for (int i = 0; i < 12; i++){
+            for (int j = 0; j < 12; j++){
+                for (int k = 0; k < 12; k++){
+                    set_led_pk(i, j, k, 0xFFF0);
+                }
+            }
+        }
+        
+        
+    }
+    kill = false;
+    clearCube();
+}
+
+/***************************************************************************
+ *
+ *   Sub Seperator
+ *
+ ***************************************************************************/
+void snow() {
+   
+    uint32_t timer = millis();
+    while (!kill) {
+        char c;
+        
+        if (keyboard.available()){
+            
+            c=keyboard.read();
+            if (c == PS2_ESC) {
+                kill = true;
+            }
+        }
+        
+    if (millis() - timer > 260) {
+
+    
+    //int color = rand() % 64000;
+    int count = 0;
+    
+   
+    
+        //delay(260);
+    for (int i = 0; i < 12; i++){
+        for (int f  = 0; f < 12; f++){
+            count = 0;
+            for (int g = 0; g < 4; g++){
+                if (LEDArray(i, g, f) != 0){
+                    count += 1;
+                }
+                if (count == 4){
+                    set_led_pk(i, g, f, 0);
+                }
+                
+            }
+        }
+    }
+    
+    for (int i = 0; i < 12; i++){
+        for (int j = 0; j < 12; j++){
+            if (rand() % 25 != 1){
+                moveRow(j, i, 1, true, 5, 1, 0, 11);
+            }
+            else {
+                moveRow(j, i, 1, false, 5, 1, 0, 11);
+            }
+        }
+    }
+        int num = rand() % 12;
+        int num1 = rand() % 12;
+        int num2 = rand() % 12;
+        set_led_pk(num, 11, num2, white);
+        set_led_pk(num1, 11, num, white);
+        set_led_pk(num2, 11, num1, white);
+            timer += 260;
+    }
+    }
+    kill = false;
+    clearCube();
+}
 
 
 
+/***************************************************************************
+ *
+ *   Sub Seperator
+ *
+ ***************************************************************************/
 void drawBall( int x, int y, int z, uint16_t color){
     for(int i=-1; i<=1; i++){
         for(int j=-1; j<=1; j++){
@@ -446,6 +698,12 @@ void drawBall( int x, int y, int z, uint16_t color){
         }
     }
 }
+
+/***************************************************************************
+ *
+ *   Sub Seperator
+ *
+ ***************************************************************************/
 
 void bounceBall(int iterations){
     int x_vec = 1;
@@ -478,5 +736,43 @@ void bounceBall(int iterations){
 
         drawBall(x,y,z, 0xFFFF);
         ////delay(200);
+        //test of the github
     }
 }
+
+/***************************************************************************
+ *
+ *   Sub Seperator
+ *
+ ***************************************************************************/
+
+
+
+
+/***************************************************************************
+ *
+ *
+ *  BASIC 'APP' FUNCTION SETUP BELOW
+ *
+ *
+ ***************************************************************************/
+/*
+ void NAME() {
+ while (!kill) {
+    char c;
+    if (keyboard.available()){
+ 
+        c=keyboard.read();
+        if (c == PS2_ESC) {
+            kill = true;
+        }
+    }
+
+    //DO STUFF HERE
+ 
+ 
+    }
+ kill = false;
+ clearCube();
+ }
+*/
