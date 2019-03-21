@@ -59,7 +59,7 @@ void snow();
 
 
 //store all functions in here after declaration
-void (*appFunction[3])() { lightCube, dodgeGame, snow };
+void (*appFunctions[3])() { lightCube, dodgeGame, snow };
 //String appFunctions[] = {"dodgeGame"};
 /**************************************************************************
  *
@@ -466,7 +466,7 @@ void mainSwitch(mainStates state) {
             
         case GAMES:
             if (i < 3 && i > -1){
-            appFunction[i]();
+            appFunctions[i]();
             }
             break;
         }
