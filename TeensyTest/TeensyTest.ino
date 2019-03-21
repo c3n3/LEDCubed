@@ -57,6 +57,8 @@ void dodgeGame();
 void lightCube();
 void snow();
 
+
+//store all functions in here after declaration
 void (*appFunction[3])() { lightCube, dodgeGame, snow };
 //String appFunctions[] = {"dodgeGame"};
 /**************************************************************************
