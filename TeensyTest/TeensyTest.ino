@@ -39,6 +39,14 @@
 //#include "PS2Keyboard.h"
 //hello from xcode
 enum mainStates {ANIMATIONS, GAMES, TOP};
+//enum directions {UP, FORWARD, LEFT, BACKWARD, RIGHT, DOWN}
+
+typedef struct{
+    uint8_t x,
+    uint8_t y,
+    uint8_t z
+} coord_t;
+
 
 /**************************************************************************
  *
@@ -56,10 +64,11 @@ void bounceBall(int iterations);
 void dodgeGame();
 void lightCube();
 void snow();
-
-
+void snakeGame();
+uint8_t GAMEAMOUNT = 2;
+uint8_t ANIMATIONAMOUNT = 2;
 //store all functions in here after declaration
-void (*appFunctions[3])() { lightCube, dodgeGame, snow };
+void (*appFunctions[2][3])() { {lightCube, snow}, {dodgeGame, snakeGame} };
 //String appFunctions[] = {"dodgeGame"};
 /**************************************************************************
  *
@@ -77,7 +86,6 @@ void (*appFunctions[3])() { lightCube, dodgeGame, snow };
 PS2Keyboard keyboard;
 volatile uint8_t     gs_buf[NUM_BYTES];  //Buffer written to TLCs over SPI (12 bit color values)
 volatile uint16_t    px_buf[NUM_LEDS];   //Pixel buffer storing each LED color as a 16 bit value ( RRRRRGGGGGGBBBBB )
-boolean kill = false;
 
 
 
@@ -157,6 +165,42 @@ uint16_t pk_color(uint16_t r, uint16_t g, uint16_t b) {
     return ((r & 0x00F8) << 8 ) |
     ((g & 0x00FC) << 3 ) |
     ((b & 0x00F8) >> 3 );
+}
+
+/***************************************************************************
+ *
+ *   Sub Seperator
+ *
+ ***************************************************************************/
+
+uint8_t shifter(uint8_t k, boolean more, mainStates state) {
+    uint8_t amount = 2;
+    if (state == GAMES) {
+        amount = GAMEAMOUNT;
+    }
+    else if (state == ANIMATIONS) {
+        amount = ANIMATIONAMOUNT;
+    }
+    
+    if (more) {
+        if (k == amount - 1) {
+            k = 0;
+        }
+        else {
+            k++;
+
+        }
+    }
+    else {
+        if (k == 0) {
+            k = amount - 1;
+        }
+        else {
+            k--;
+
+        }
+    }
+    return k;
 }
 
 /***************************************************************************
@@ -440,38 +484,94 @@ void DrawFigure(int x1, int y1, int z1, int x2, int y2, int z2) {
  **************************************************************************/
 
 void mainSwitch(mainStates state) {
-    int i;
+    int i = 0;
+    uint8_t stateSwitch = 1;
     while(true) {
-        char c = ']';
+        char c;
         
         if (keyboard.available()) {
             c = keyboard.read();
-            i = c - '0';
+            //i = c - '0';
         }
-        if (c != ']') {
+        
     switch (state) {
             int y;
         case TOP:
-            
+
+            if (c == PS2_RIGHTARROW) {
+                clearCube();
+
+                stateSwitch = shifter(stateSwitch, true, TOP);
+            }
+            if (c == PS2_LEFTARROW) {
+                clearCube();
+
+                stateSwitch = shifter(stateSwitch, false, TOP);
+
+            }
+            else if (c == PS2_ENTER) {
+                state = mainStates(stateSwitch);
+                clearCube();
+                break;
+            }
             y=0;
-            
+            set_led(stateSwitch + 5, 5, 0, 255, 255, 255);
             break;
             
         case ANIMATIONS:
+
+            if (c == PS2_ESC) {
+                state = TOP;
+                clearCube();
+                break;
+
+            }
             
+            else if (c == PS2_LEFTARROW) {
+                i = shifter(i, false, ANIMATIONS);
+                clearCube();
+
+            }
+            else if (c == PS2_RIGHTARROW) {
+                i = shifter(i, true, ANIMATIONS);
+                clearCube();
+
+            }
             
-            
-            
+            else if (c == PS2_ENTER){
+                appFunctions[0][i]();
+            }
+            set_led_pk(i, 5, 0, 0xFFFF);
             break;
             
         case GAMES:
-            if (i < 3 && i > -1){
-            appFunctions[i]();
+
+            if (c == PS2_ESC) {
+                state = TOP;
+                clearCube();
+                break;
             }
+            
+            else if (c == PS2_LEFTARROW) {
+                i = shifter(i, false, GAMES);
+                clearCube();
+
+            }
+            else if (c == PS2_RIGHTARROW) {
+                i = shifter(i, true, GAMES);
+                clearCube();
+
+            }
+            
+            else if (c == PS2_ENTER){
+            appFunctions[1][i]();
+            }
+            set_led_pk(i, 5, 0, 0xFFFF);
             break;
-        }
+        
     }
-            c = ']';
+        c = ']';
+
 }
 }
 
@@ -490,7 +590,7 @@ void mainSwitch(mainStates state) {
 // Add loop code
 void loop()
 {
-    mainSwitch(GAMES);
+    mainSwitch(TOP);
   //this is curently just a simple 'dodge' game
     
 } //end loop
@@ -511,7 +611,7 @@ void dodgeGame() {
     
     uint32_t timer0 = millis();
     uint8_t key = 0;
-    while (!kill){
+    while (true){
    
     uint8_t delayTime = 120;
     int x = rand() % 12;
@@ -534,7 +634,7 @@ void dodgeGame() {
         
         c=keyboard.read();
         if (c == PS2_ESC) {
-            kill = true;
+            break;
         }
     }
     
@@ -582,7 +682,6 @@ void dodgeGame() {
     }
     
     }
-    kill = false;
     clearCube();
 }
 
@@ -592,15 +691,44 @@ void dodgeGame() {
  *
  ***************************************************************************/
 
+void snakeGame() {
+#define MAX_SNAKE_LEN 50
+    
+    coord_t snake[ MAX_SNAKE_LEN ];
+    coord_t * sk_head = snake;
+    coord_t * sk_tail = snake;
+    while (true) {
+        char c;
+        if (keyboard.available()){
+            c=keyboard.read();
+            if (c == PS2_ESC) {
+                break;
+            }
+        }
+    }
+
+
+
+
+#undef MAX_SNAKE_LEN
+}
+
+/***************************************************************************
+ *
+ *   Sub Seperator
+ *
+ ***************************************************************************/
+
 void lightCube() {
-    while (!kill) {
+    while (true) {
         char c;
         
         if (keyboard.available()){
             
             c=keyboard.read();
             if (c == PS2_ESC) {
-                kill = true;
+                break;
+                
             }
         }
         for (int i = 0; i < 12; i++){
@@ -613,8 +741,72 @@ void lightCube() {
         
         
     }
-    kill = false;
     clearCube();
+}
+
+/***************************************************************************
+ *
+ *   Sub Seperator
+ *
+ ***************************************************************************/
+
+void particles() {
+    
+    uint32_t timer = millis();
+    while (true) {
+        char c;
+        
+        if (keyboard.available()){
+            
+            c=keyboard.read();
+            if (c == PS2_ESC) {
+                break;
+            }
+        }
+        
+        if (millis() - timer > 260) {
+            
+            
+            //int color = rand() % 64000;
+            int count = 0;
+            
+            
+            
+            //delay(260);
+            for (int i = 0; i < 12; i++){
+                for (int f  = 0; f < 12; f++){
+                    count = 0;
+                    for (int g = 0; g < 4; g++){
+                        if (LEDArray(i, g, f) != 0){
+                            count += 1;
+                        }
+                        if (count == 4){
+                            set_led_pk(i, g, f, 0);
+                        }
+                        
+                    }
+                }
+            }
+            
+            for (int i = 0; i < 12; i++){
+                for (int j = 0; j < 12; j++){
+                    
+                        moveRow(j, i, 1, true, 5, 1, 0, 11);
+                    
+                    
+                }
+            }
+            int num = rand() % 12;
+            int num1 = rand() % 12;
+            int num2 = rand() % 12;
+            set_led_pk(num, 11, num2, white);
+            set_led_pk(num1, 11, num, white);
+            set_led_pk(num2, 11, num1, white);
+            timer += 260;
+        }
+    }
+    clearCube();
+    
 }
 
 /***************************************************************************
@@ -625,14 +817,14 @@ void lightCube() {
 void snow() {
    
     uint32_t timer = millis();
-    while (!kill) {
+    while (true) {
         char c;
         
         if (keyboard.available()){
             
             c=keyboard.read();
             if (c == PS2_ESC) {
-                kill = true;
+                break;
             }
         }
         
@@ -677,9 +869,8 @@ void snow() {
         set_led_pk(num1, 11, num, white);
         set_led_pk(num2, 11, num1, white);
             timer += 260;
+        }
     }
-    }
-    kill = false;
     clearCube();
 }
 
@@ -778,3 +969,4 @@ void bounceBall(int iterations){
  clearCube();
  }
 */
+
