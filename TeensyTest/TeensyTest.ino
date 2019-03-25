@@ -35,17 +35,19 @@
 #error Platform not defined
 #endif // end IDE
 
+#include "helperFunctions.h"
+#include "subApplicationFunctions.h"
 #include "PS2Keyboard.h"
 //#include "PS2Keyboard.h"
 //hello from xcode
 enum mainStates {ANIMATIONS, GAMES, TOP};
-//enum directions {UP, FORWARD, LEFT, BACKWARD, RIGHT, DOWN}
+enum directions {UP, FORWARD, LEFT, BACKWARD, RIGHT, DOWN};
 
-typedef struct{
-    uint8_t x,
-    uint8_t y,
-    uint8_t z
-} coord_t;
+//typedef struct{
+//    uint8_t x,
+//    uint8_t y,
+//    uint8_t z
+//} coord_t;
 
 
 /**************************************************************************
@@ -243,25 +245,25 @@ void set_led_pk( uint8_t x, uint8_t y, uint8_t z, uint16_t c){
  ***************************************************************************/
 
 //this function switches which orientation you may look at the cube, the  coordinates go as follows, the face you look at for each direction, the reletive 'z' coordinate is the third one, the reletive 'x' is either the true z or x direction, and the second coordinate is always the reletive 'y'
-uint16_t directionalCubeArray(uint8_t firstCord, uint8_t secondCord, uint8_t thirdCord, uint16_t color, uint8_t direction, boolean setLED){
+uint16_t directionalCubeArray(uint8_t firstCord, uint8_t secondCord, uint8_t thirdCord, uint16_t color, directions direction, boolean setLED){
     if (setLED){
         switch (direction) { //you can set leds
-            case 0:
+            case UP:
                 set_led_pk(firstCord, thirdCord, secondCord, color);
                 break;
-            case 1:
+            case FORWARD:
                 set_led_pk(firstCord, secondCord, thirdCord, color);
                 break;
-            case 2:
+            case LEFT:
                 set_led_pk(11 - thirdCord, secondCord, firstCord, color);
                 break;
-            case 3:
+            case BACKWARD:
                 set_led_pk(11 - firstCord, secondCord, 11 - thirdCord, color);
                 break;
-            case 4:
+            case RIGHT:
                 set_led_pk(thirdCord, secondCord, 11 - firstCord, color);
                 break;
-            case 5:
+            case DOWN:
                 set_led_pk(firstCord, 11 - thirdCord, secondCord, color);
                 break;
 
@@ -272,22 +274,22 @@ uint16_t directionalCubeArray(uint8_t firstCord, uint8_t secondCord, uint8_t thi
     }
     else {
         switch (direction) {//or you can call the array for the cube, it returns the value
-            case 0:
+            case UP:
                 return LEDArray(firstCord, thirdCord, secondCord);
                 break;
-            case 1:
+            case FORWARD:
                 return LEDArray(firstCord, secondCord, thirdCord);
                 break;
-            case 2:
+            case LEFT:
                 return LEDArray(11 - thirdCord, secondCord, firstCord);
                 break;
-            case 3:
+            case BACKWARD:
                 return LEDArray(11 - firstCord, secondCord, 11 - thirdCord);
                 break;
-            case 4:
+            case RIGHT:
                 return LEDArray(thirdCord, secondCord, 11 - firstCord);
                 break;
-            case 5:
+            case DOWN:
                 return LEDArray(firstCord, 11 - thirdCord, secondCord);
                 break;
 
@@ -305,7 +307,7 @@ uint16_t directionalCubeArray(uint8_t firstCord, uint8_t secondCord, uint8_t thi
  *
  ***************************************************************************/
 
-void moveRow(int firstCord, int secondCord, uint16_t color, boolean collective, int direction, uint16_t specificColor, uint8_t start, uint8_t end){
+void moveRow(int firstCord, int secondCord, uint16_t color, boolean collective, directions direction, uint16_t specificColor, uint8_t start, uint8_t end){
 
 
     if (!collective && end == 11){
@@ -687,16 +689,19 @@ void dodgeGame() {
 
 /***************************************************************************
  *
- *   Sub Seperator
+ *   Sub Seperator t
  *
  ***************************************************************************/
+void directionCheck(uint8_t x, uint8_t y, uint8_t z, uint16_t currentColor) {
+    
+}
 
 void snakeGame() {
 #define MAX_SNAKE_LEN 50
     
-    coord_t snake[ MAX_SNAKE_LEN ];
-    coord_t * sk_head = snake;
-    coord_t * sk_tail = snake;
+   // coord_t snake[ MAX_SNAKE_LEN ];
+   // coord_t * sk_head = snake;
+   // coord_t * sk_tail = snake;
     while (true) {
         char c;
         if (keyboard.available()){
@@ -705,11 +710,10 @@ void snakeGame() {
                 break;
             }
         }
+    
+    
+    
     }
-
-
-
-
 #undef MAX_SNAKE_LEN
 }
 
