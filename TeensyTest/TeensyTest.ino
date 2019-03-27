@@ -40,7 +40,7 @@
 #include "PS2Keyboard.h"
 //#include "PS2Keyboard.h"
 //hello from xcode
-enum mainStates {ANIMATIONS, GAMES, TOP};
+enum mainStates {ANIMATIONS, GAMES, TOP, INTERACTIVEANIMATIONS};
 enum directions {UP, FORWARD, LEFT, BACKWARD, RIGHT, DOWN};
 
 //typedef struct{
@@ -59,7 +59,6 @@ enum directions {UP, FORWARD, LEFT, BACKWARD, RIGHT, DOWN};
  *
  *
  **************************************************************************/
-
 void set_led( uint8_t x, uint8_t y, uint8_t z, uint16_t r, uint16_t g, uint16_t b);
 void drawBall( int x, int y, int z, uint16_t color);
 void bounceBall(int iterations);
@@ -67,10 +66,12 @@ void dodgeGame();
 void lightCube();
 void snow();
 void snakeGame();
+void someThing();
 uint8_t GAMEAMOUNT = 2;
 uint8_t ANIMATIONAMOUNT = 2;
+uint8_t INTERACTIVEANIMATIONSAMOUNT = 1;
 //store all functions in here after declaration
-void (*appFunctions[2][3])() { {lightCube, snow}, {dodgeGame, snakeGame} };
+void (*appFunctions[3][3])() {{someThing}, {lightCube, snow}, {dodgeGame, snakeGame} };
 //String appFunctions[] = {"dodgeGame"};
 /**************************************************************************
  *
@@ -162,6 +163,18 @@ void set_led( uint8_t x, uint8_t y, uint8_t z, uint16_t r, uint16_t g, uint16_t 
  *
  ***************************************************************************/
 
+void d(uint16_t t){
+    uint32_t temp = millis();
+    while (millis() - temp > t) {
+    }
+}
+
+/***************************************************************************
+ *
+ *   Sub Seperator
+ *
+ ***************************************************************************/
+
 //packs a rgb color into one number
 uint16_t pk_color(uint16_t r, uint16_t g, uint16_t b) {
     return ((r & 0x00F8) << 8 ) |
@@ -175,16 +188,20 @@ uint16_t pk_color(uint16_t r, uint16_t g, uint16_t b) {
  *
  ***************************************************************************/
 
-uint8_t shifter(uint8_t k, boolean more, mainStates state) {
-    uint8_t amount = 2;
+uint8_t shifter(uint8_t k, directions more, mainStates state) {
+    uint8_t amount = 3; //for the top level
     if (state == GAMES) {
         amount = GAMEAMOUNT;
     }
     else if (state == ANIMATIONS) {
         amount = ANIMATIONAMOUNT;
     }
+    else if (state == INTERACTIVEANIMATIONS) {
+        
+        amount = INTERACTIVEANIMATIONSAMOUNT;
+    }
     
-    if (more) {
+    if (more == RIGHT) {
         if (k == amount - 1) {
             k = 0;
         }
@@ -245,7 +262,7 @@ void set_led_pk( uint8_t x, uint8_t y, uint8_t z, uint16_t c){
  ***************************************************************************/
 
 //this function switches which orientation you may look at the cube, the  coordinates go as follows, the face you look at for each direction, the reletive 'z' coordinate is the third one, the reletive 'x' is either the true z or x direction, and the second coordinate is always the reletive 'y'
-uint16_t directionalCubeArray(uint8_t firstCord, uint8_t secondCord, uint8_t thirdCord, uint16_t color, directions direction, boolean setLED){
+uint16_t directionalCubeArray(uint8_t firstCord, uint8_t secondCord, uint8_t thirdCord, directions direction, boolean setLED = false, uint16_t color = 0){
     if (setLED){
         switch (direction) { //you can set leds
             case UP:
@@ -307,68 +324,200 @@ uint16_t directionalCubeArray(uint8_t firstCord, uint8_t secondCord, uint8_t thi
  *
  ***************************************************************************/
 
-void moveRow(int firstCord, int secondCord, uint16_t color, boolean collective, directions direction, uint16_t specificColor, uint8_t start, uint8_t end){
+void moveRow(uint8_t firstCord, uint8_t secondCord,  directions direction,  uint16_t specificColor = 1, boolean collective = false, uint8_t start = 0, uint8_t end = 11, uint16_t color = 1){
 
 
     if (!collective && end == 11){
-        directionalCubeArray(firstCord, secondCord, 11, 0, direction, true);
+        directionalCubeArray(firstCord, secondCord, 11, direction, true);
     }
     for (int i = 10 - (11 - end); i >= 0 + start; i--){
         if (specificColor == 1) {
-            if (directionalCubeArray(firstCord, secondCord, i, 0, direction, false) != 0){
+            if (directionalCubeArray(firstCord, secondCord, i, direction) != 0){
                 if (collective){
-                    if (directionalCubeArray(firstCord, secondCord, i + 1, 0, direction, false) == 0){
+                    if (directionalCubeArray(firstCord, secondCord, i + 1, direction) == 0){
                         if (color == 1){
-                            directionalCubeArray(firstCord, secondCord, i + 1, directionalCubeArray(firstCord, secondCord, i, 0, direction, false), direction, true);
+                            directionalCubeArray(firstCord, secondCord, i + 1,  direction, true, directionalCubeArray(firstCord, secondCord, i, direction));
                         }
                         else {
-                            directionalCubeArray(firstCord, secondCord, i, color, direction, true);
+                            directionalCubeArray(firstCord, secondCord, i, direction, true, color);
                         }
-                        directionalCubeArray(firstCord, secondCord, i, 0, direction, true);
+                        directionalCubeArray(firstCord, secondCord, i, direction, true);
                     }
 
                 }
                 else {
 
                     if (color == 1){
-                        directionalCubeArray(firstCord, secondCord, i + 1, directionalCubeArray(firstCord, secondCord, i, 0, direction, false), direction, true);
+                        directionalCubeArray(firstCord, secondCord, i + 1, direction, true, directionalCubeArray(firstCord, secondCord, i, direction));
                     }
                     else {
-                        directionalCubeArray(firstCord, secondCord, i + 1, color, direction, true);
+                        directionalCubeArray(firstCord, secondCord, i + 1, direction, true, color);
                     }
-                    directionalCubeArray(firstCord, secondCord, i, 0, direction, true);
+                    directionalCubeArray(firstCord, secondCord, i, direction, true);
                 }
             }
         }
         else {
-            if (directionalCubeArray(firstCord, secondCord, i, 0, direction, false) != 0 && directionalCubeArray(firstCord, secondCord, i, 0, direction, false) == specificColor){
+            if (directionalCubeArray(firstCord, secondCord, i, direction) != 0 && directionalCubeArray(firstCord, secondCord, i, direction) == specificColor){
                 if (collective){
-                    if (directionalCubeArray(firstCord, secondCord, i + 1, 0, direction, false) == 0){
+                    if (directionalCubeArray(firstCord, secondCord, i + 1, direction) == 0){
                         if (color == 1){
-                            directionalCubeArray(firstCord, secondCord, i + 1, directionalCubeArray(firstCord, secondCord, i, 0, direction, false), direction, true);
+                            directionalCubeArray(firstCord, secondCord, i + 1, direction, true, directionalCubeArray(firstCord, secondCord, i, direction, false));
                         }
                         else {
-                            directionalCubeArray(firstCord, secondCord, i, color, direction, true);
+                            directionalCubeArray(firstCord, secondCord, i, direction, true, color);
                         }
-                        directionalCubeArray(firstCord, secondCord, i, 0, direction, true);
+                        directionalCubeArray(firstCord, secondCord, i, direction, true);
                     }
 
                 }
                 else {
 
                     if (color == 1){
-                        directionalCubeArray(firstCord, secondCord, i + 1, directionalCubeArray(firstCord, secondCord, i, 0, direction, false), direction, true);
+                        directionalCubeArray(firstCord, secondCord, i + 1,  direction, true, directionalCubeArray(firstCord, secondCord, i, direction));
                     }
                     else {
-                        directionalCubeArray(firstCord, secondCord, i + 1, color, direction, true);
+                        directionalCubeArray(firstCord, secondCord, i + 1, direction, true, color);
                     }
-                    directionalCubeArray(firstCord, secondCord, i, 0, direction, true);
+                    directionalCubeArray(firstCord, secondCord, i, direction, true);
 
                 }
             }
         }
     }
 
+}
+
+/***************************************************************************
+ *
+ *   Sub Seperator
+ *
+ ***************************************************************************/
+
+void drawNumber(int number, int x1, int y1, int z1, directions viewpoint, uint16_t color) {
+    if (number == 0) {
+        directionalCubeArray(x1, y1, z1, viewpoint, true, color);
+        directionalCubeArray(x1+1, y1, z1, viewpoint, true, color);
+        directionalCubeArray(x1+2, y1, z1, viewpoint, true, color);
+        directionalCubeArray(x1+2, y1+1, z1, viewpoint, true, color);
+        directionalCubeArray(x1+2, y1+2, z1, viewpoint, true, color);
+        directionalCubeArray(x1+2, y1+3, z1, viewpoint, true, color);
+        directionalCubeArray(x1+2, y1+4, z1, viewpoint, true, color);
+        directionalCubeArray(x1+1, y1+4, z1, viewpoint, true, color);
+        directionalCubeArray(x1, y1+4, z1, viewpoint, true, color);
+        directionalCubeArray(x1, y1+3, z1, viewpoint, true, color);
+        directionalCubeArray(x1, y1+2, z1, viewpoint, true, color);
+        directionalCubeArray(x1, y1+1, z1, viewpoint, true, color);
+    }
+    else if (number == 1) {
+        directionalCubeArray(x1, y1, z1, viewpoint, true, color);
+        directionalCubeArray(x1+1, y1, z1, viewpoint, true, color);
+        directionalCubeArray(x1+2, y1, z1, viewpoint, true, color);
+        directionalCubeArray(x1+1, y1+1, z1, viewpoint, true, color);
+        directionalCubeArray(x1+1, y1+2, z1, viewpoint, true, color);
+        directionalCubeArray(x1+1, y1+3, z1, viewpoint, true, color);
+        directionalCubeArray(x1+1, y1+4, z1, viewpoint, true, color);
+        directionalCubeArray(x1, y1+3, z1, viewpoint, true, color);
+    }
+    else if (number == 2) {
+        directionalCubeArray(x1, y1, z1, viewpoint, true, color);
+        directionalCubeArray(x1+1, y1, z1, viewpoint, true, color);
+        directionalCubeArray(x1+2, y1, z1, viewpoint, true, color);
+        directionalCubeArray(x1, y1+1, z1, viewpoint, true, color);
+        directionalCubeArray(x1, y1+2, z1, viewpoint, true, color);
+        directionalCubeArray(x1, y1+4, z1, viewpoint, true, color);
+        directionalCubeArray(x1+1, y1+4, z1, viewpoint, true, color);
+        directionalCubeArray(x1+2, y1+4, z1, viewpoint, true, color);
+        directionalCubeArray(x1+2, y1+3, z1, viewpoint, true, color);
+        directionalCubeArray(x1+2, y1+2, z1, viewpoint, true, color);
+        directionalCubeArray(x1+1, y1+2, z1, viewpoint, true, color);
+    }
+    else if (number == 3) {
+        directionalCubeArray(x1, y1+4, z1, viewpoint, true, color);
+        directionalCubeArray(x1+1, y1+2, z1, viewpoint, true, color);
+        directionalCubeArray(x1+2, y1, z1, viewpoint, true, color);
+        directionalCubeArray(x1+2, y1+1, z1, viewpoint, true, color);
+        directionalCubeArray(x1+2, y1+2, z1, viewpoint, true, color);
+        directionalCubeArray(x1+2, y1+3, z1, viewpoint, true, color);
+        directionalCubeArray(x1+2, y1+4, z1, viewpoint, true, color);
+        directionalCubeArray(x1+1, y1+4, z1, viewpoint, true, color);
+        directionalCubeArray(x1, y1, z1, viewpoint, true, color);
+        directionalCubeArray(x1+1, y1, z1, viewpoint, true, color);
+    }
+    else if (number == 4) {
+        directionalCubeArray(x1, y1+2, z1, viewpoint, true, color);
+        directionalCubeArray(x1, y1+3, z1, viewpoint, true, color);
+        directionalCubeArray(x1, y1+4, z1, viewpoint, true, color);
+        directionalCubeArray(x1+1, y1+2, z1, viewpoint, true, color);
+        directionalCubeArray(x1+2, y1, z1, viewpoint, true, color);
+        directionalCubeArray(x1+2, y1+1, z1, viewpoint, true, color);
+        directionalCubeArray(x1+2, y1+2, z1, viewpoint, true, color);
+        directionalCubeArray(x1+2, y1+3, z1, viewpoint, true, color);
+        directionalCubeArray(x1+2, y1+4, z1, viewpoint, true, color);
+    }
+    else if (number == 5) {
+        directionalCubeArray(x1, y1+2, z1, viewpoint, true, color);
+        directionalCubeArray(x1, y1+3, z1, viewpoint, true, color);
+        directionalCubeArray(x1, y1+4, z1, viewpoint, true, color);
+        directionalCubeArray(x1+1, y1+2, z1, viewpoint, true, color);
+        directionalCubeArray(x1+2, y1, z1, viewpoint, true, color);
+        directionalCubeArray(x1+2, y1+1, z1, viewpoint, true, color);
+        directionalCubeArray(x1+2, y1+2, z1, viewpoint, true, color);
+        directionalCubeArray(x1+2, y1+4, z1, viewpoint, true, color);
+        directionalCubeArray(x1+1, y1+4, z1, viewpoint, true, color);
+        directionalCubeArray(x1, y1, z1, viewpoint, true, color);
+        directionalCubeArray(x1+1, y1, z1, viewpoint, true, color);
+    }
+    else if (number == 6) {
+        directionalCubeArray(x1, y1+2, z1, viewpoint, true, color);
+        directionalCubeArray(x1, y1+3, z1, viewpoint, true, color);
+        directionalCubeArray(x1, y1+4, z1, viewpoint, true, color);
+        directionalCubeArray(x1+1, y1+2, z1, viewpoint, true, color);
+        directionalCubeArray(x1+2, y1, z1, viewpoint, true, color);
+        directionalCubeArray(x1+2, y1+1, z1, viewpoint, true, color);
+        directionalCubeArray(x1+2, y1+2, z1, viewpoint, true, color);
+        directionalCubeArray(x1+2, y1+4, z1, viewpoint, true, color);
+        directionalCubeArray(x1+1, y1+4, z1, viewpoint, true, color);
+        directionalCubeArray(x1, y1, z1, viewpoint, true, color);
+        directionalCubeArray(x1+1, y1, z1, viewpoint, true, color);
+        directionalCubeArray(x1, y1+1, z1, viewpoint, true, color);
+    }
+    else if (number == 7) {
+        directionalCubeArray(x1, y1+4, z1, viewpoint, true, color);
+        directionalCubeArray(x1+2, y1, z1, viewpoint, true, color);
+        directionalCubeArray(x1+2, y1+1, z1, viewpoint, true, color);
+        directionalCubeArray(x1+2, y1+2, z1, viewpoint, true, color);
+        directionalCubeArray(x1+2, y1+3, z1, viewpoint, true, color);
+        directionalCubeArray(x1+2, y1+4, z1, viewpoint, true, color);
+        directionalCubeArray(x1+1, y1+4, z1, viewpoint, true, color);
+    }
+    else if (number == 8) {
+        directionalCubeArray(x1, y1+2, z1, viewpoint, true, color);
+        directionalCubeArray(x1, y1+3, z1, viewpoint, true, color);
+        directionalCubeArray(x1, y1+4, z1, viewpoint, true, color);
+        directionalCubeArray(x1+1, y1+2, z1, viewpoint, true, color);
+        directionalCubeArray(x1+2, y1, z1, viewpoint, true, color);
+        directionalCubeArray(x1+2, y1+1, z1, viewpoint, true, color);
+        directionalCubeArray(x1+2, y1+2, z1, viewpoint, true, color);
+        directionalCubeArray(x1+2, y1+3, z1, viewpoint, true, color);
+        directionalCubeArray(x1+2, y1+4, z1, viewpoint, true, color);
+        directionalCubeArray(x1+1, y1+4, z1, viewpoint, true, color);
+        directionalCubeArray(x1, y1, z1, viewpoint, true, color);
+        directionalCubeArray(x1+1, y1, z1, viewpoint, true, color);
+        directionalCubeArray(x1, y1+1, z1, viewpoint, true, color);
+    }
+    else if (number == 9) {
+        directionalCubeArray(x1, y1+2, z1, viewpoint, true, color);
+        directionalCubeArray(x1, y1+3, z1, viewpoint, true, color);
+        directionalCubeArray(x1, y1+4, z1, viewpoint, true, color);
+        directionalCubeArray(x1+1, y1+2, z1, viewpoint, true, color);
+        directionalCubeArray(x1+2, y1, z1, viewpoint, true, color);
+        directionalCubeArray(x1+2, y1+1, z1, viewpoint, true, color);
+        directionalCubeArray(x1+2, y1+2, z1, viewpoint, true, color);
+        directionalCubeArray(x1+2, y1+3, z1, viewpoint, true, color);
+        directionalCubeArray(x1+2, y1+4, z1, viewpoint, true, color);
+        directionalCubeArray(x1+1, y1+4, z1, viewpoint, true, color);
+    }
 }
 
 /***************************************************************************
@@ -503,12 +652,12 @@ void mainSwitch(mainStates state) {
             if (c == PS2_RIGHTARROW) {
                 clearCube();
 
-                stateSwitch = shifter(stateSwitch, true, TOP);
+                stateSwitch = shifter(stateSwitch, RIGHT, TOP);
             }
             if (c == PS2_LEFTARROW) {
                 clearCube();
 
-                stateSwitch = shifter(stateSwitch, false, TOP);
+                stateSwitch = shifter(stateSwitch, LEFT, TOP);
 
             }
             else if (c == PS2_ENTER) {
@@ -517,7 +666,9 @@ void mainSwitch(mainStates state) {
                 break;
             }
             y=0;
-            set_led(stateSwitch + 5, 5, 0, 255, 255, 255);
+            drawNumber(stateSwitch, 5, 5, 0, FORWARD, 0xF0F0);
+            drawNumber(stateSwitch, 5, 5, 1, FORWARD, 0xF0F0);
+
             break;
             
         case ANIMATIONS:
@@ -530,12 +681,12 @@ void mainSwitch(mainStates state) {
             }
             
             else if (c == PS2_LEFTARROW) {
-                i = shifter(i, false, ANIMATIONS);
+                i = shifter(i, LEFT, ANIMATIONS);
                 clearCube();
 
             }
             else if (c == PS2_RIGHTARROW) {
-                i = shifter(i, true, ANIMATIONS);
+                i = shifter(i, RIGHT, ANIMATIONS);
                 clearCube();
 
             }
@@ -543,7 +694,9 @@ void mainSwitch(mainStates state) {
             else if (c == PS2_ENTER){
                 appFunctions[0][i]();
             }
-            set_led_pk(i, 5, 0, 0xFFFF);
+            drawNumber(i, 5, 5, 0, FORWARD, 0xFFFF);
+            drawNumber(i, 5, 5, 1, FORWARD, 0xFFFF);
+
             break;
             
         case GAMES:
@@ -555,12 +708,12 @@ void mainSwitch(mainStates state) {
             }
             
             else if (c == PS2_LEFTARROW) {
-                i = shifter(i, false, GAMES);
+                i = shifter(i, LEFT, GAMES);
                 clearCube();
 
             }
             else if (c == PS2_RIGHTARROW) {
-                i = shifter(i, true, GAMES);
+                i = shifter(i, RIGHT, GAMES);
                 clearCube();
 
             }
@@ -568,9 +721,38 @@ void mainSwitch(mainStates state) {
             else if (c == PS2_ENTER){
             appFunctions[1][i]();
             }
-            set_led_pk(i, 5, 0, 0xFFFF);
+            drawNumber(i, 5, 5, 0, FORWARD, 0xFFFF);
+            drawNumber(i, 5, 5, 1, FORWARD, 0xFFFF);
+
             break;
         
+            case INTERACTIVEANIMATIONS:
+            
+            if (c == PS2_ESC) {
+                state = TOP;
+                clearCube();
+                break;
+            }
+            
+            else if (c == PS2_LEFTARROW) {
+                i = shifter(i, LEFT, INTERACTIVEANIMATIONS);
+                clearCube();
+                
+            }
+            else if (c == PS2_RIGHTARROW) {
+                i = shifter(i, RIGHT, INTERACTIVEANIMATIONS);
+                clearCube();
+                
+            }
+            
+            else if (c == PS2_ENTER){
+                appFunctions[2][i]();
+            }
+            drawNumber(i, 5, 5, 0, FORWARD, 0xFFFF);
+            drawNumber(i, 5, 5, 1, FORWARD, 0xFFFF);
+            
+            break;
+            
     }
         c = ']';
 
@@ -643,27 +825,27 @@ void dodgeGame() {
     if (c == PS2_UPARROW){
         for (int i = 0; i < 12; i++){
             
-            moveRow(i, 1, 1, true, 0, 0xF00, 0, 11);
+            moveRow(i, 1, UP, 0xF00, true);
             c = '[';
         }
     }
     else if (c == PS2_DOWNARROW){
         for (int i = 0; i < 12; i++){
-            moveRow(i, 1, 1, true, 5, 0xF00, 0, 11);
+            moveRow(i, 1, DOWN, 0xF00, true);
             c = '[';
         }
     }
     else if (c == PS2_LEFTARROW){
         for (int i = 0; i < 12; i++){
             
-            moveRow(1, i, 1, true, 2, 0xF00, 0, 11);
+            moveRow(1, i, LEFT, 0xF00, true);
             c = '[';
         }
     }
     else if (c == PS2_RIGHTARROW){
         for (int i = 0; i < 12; i++){
             
-            moveRow(10, i, 1, true, 4, 0xF00, 0, 11);
+            moveRow(1, i, RIGHT, 0xF00, true);
             c = '[';
         }
     }
@@ -677,7 +859,7 @@ void dodgeGame() {
         for (int i = 0; i < 12; i++){
             for (int j = 0; j < 12; j++){
                 
-                moveRow(i, j, 1, false, 3, 0xFFF, 0, 11);
+                moveRow(i, j, BACKWARD, 0xFFF);
             }
         }
         
@@ -754,7 +936,100 @@ void lightCube() {
  *
  ***************************************************************************/
 
-void particles() {
+void someThing() {
+    
+    uint32_t timer = millis();
+    while (true) {
+        char c;
+        
+        if (keyboard.available()){
+            
+            c=keyboard.read();
+            if (c == PS2_ESC) {
+                break;
+            }
+        }
+        if (millis() - timer > 200){
+        set_led(rand() % 12, rand() % 12, rand() % 12, rand() % 255, rand() % 255, rand() % 255);
+            timer += 200;
+        }
+        if (c == PS2_BACKSPACE) {
+            for (int i = 1; i < 6; i++){
+                for (int i = 0; i < 12; i++){
+                    for (int j = 0; j < 12; j++){
+                        for (int k = 0; k < 12; k++){
+                            set_led(i, j, k, i * (255 / 5), i * (255 / 5), i * (255 / 5));
+                        }
+                    }
+                }
+               // d(60); //delay
+            }
+            for (int i = 5; i >= 0; i--){
+                for (int i = 0; i < 12; i++){
+                    for (int j = 0; j < 12; j++){
+                        for (int k = 0; k < 12; k++){
+                            set_led(i, j, k, (255 / 5), i * (255 / 5), i * (255 / 5));
+                        }
+                    }
+                }
+                //d(60); //delay
+            }
+        }
+
+        if (c == PS2_UPARROW){
+            for (int i = 0; i < 12; i++){
+                for (int j = 0; j < 12; i++){
+
+                //moveRow(i, j, LEFT);
+                c = '[';
+            }
+        }
+        }
+        else if (c == PS2_DOWNARROW){
+            for (int i = 0; i < 12; i++){
+                for (int j = 0; j < 12; j++){
+                    
+                    moveRow(i, j, BACKWARD);
+                    c = '[';
+                }
+            }
+        }
+        
+
+        else if (c == PS2_LEFTARROW){
+            for (int i = 0; i < 12; i++){
+                for (int j = 0; j < 12; j++){
+                    
+                    moveRow(i, j, LEFT);
+                    c = '[';
+                }
+            }
+        }
+        
+
+        else if (c == PS2_RIGHTARROW){
+            for (int i = 0; i < 12; i++){
+                for (int j = 0; j < 12; j++){
+                    
+                    moveRow(i, j, RIGHT);
+                    c = '[';
+                }
+            }
+        }
+
+
+            
+            
+    }
+}
+
+/***************************************************************************
+ *
+ *   Sub Seperator
+ *
+ ***************************************************************************/
+
+void spiral() {
     
     uint32_t timer = millis();
     while (true) {
@@ -768,49 +1043,11 @@ void particles() {
             }
         }
         
-        if (millis() - timer > 260) {
-            
-            
-            //int color = rand() % 64000;
-            int count = 0;
-            
-            
-            
-            //delay(260);
-            for (int i = 0; i < 12; i++){
-                for (int f  = 0; f < 12; f++){
-                    count = 0;
-                    for (int g = 0; g < 4; g++){
-                        if (LEDArray(i, g, f) != 0){
-                            count += 1;
-                        }
-                        if (count == 4){
-                            set_led_pk(i, g, f, 0);
-                        }
-                        
-                    }
-                }
-            }
-            
-            for (int i = 0; i < 12; i++){
-                for (int j = 0; j < 12; j++){
-                    
-                        moveRow(j, i, 1, true, 5, 1, 0, 11);
-                    
-                    
-                }
-            }
-            int num = rand() % 12;
-            int num1 = rand() % 12;
-            int num2 = rand() % 12;
-            set_led_pk(num, 11, num2, white);
-            set_led_pk(num1, 11, num, white);
-            set_led_pk(num2, 11, num1, white);
-            timer += 260;
-        }
-    }
-    clearCube();
-    
+        
+ 
+        
+        
+}
 }
 
 /***************************************************************************
@@ -859,10 +1096,10 @@ void snow() {
     for (int i = 0; i < 12; i++){
         for (int j = 0; j < 12; j++){
             if (rand() % 25 != 1){
-                moveRow(j, i, 1, true, 5, 1, 0, 11);
+                moveRow(j, i, DOWN, true);
             }
             else {
-                moveRow(j, i, 1, false, 5, 1, 0, 11);
+                moveRow(j, i, DOWN, false);
             }
         }
     }
