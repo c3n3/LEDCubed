@@ -1037,8 +1037,8 @@ void MoveLED(uint8_t x, uint8_t y, uint8_t z, uint16_t currentColor, boolean gai
     Serial.println(z);
 
     if (LEDArray(x + 1, y, z) == currentColor) {
-        set_led_pk(x, y, z, currentColor, gainLength);
-        MoveLED(x + 1, y, z, currentColor);
+        set_led_pk(x, y, z, currentColor);
+        MoveLED(x + 1, y, z, currentColor, gainLength);
     }
     else if (LEDArray(x - 1, y, z) == currentColor) {
         set_led_pk(x, y, z, currentColor);
@@ -1061,7 +1061,7 @@ void MoveLED(uint8_t x, uint8_t y, uint8_t z, uint16_t currentColor, boolean gai
     else if (LEDArray(x, y, z+1) == currentColor) {
         set_led_pk(x, y, z, currentColor);
         
-        MoveLED(x, y, z+1, currentColor);
+        MoveLED(x, y, z+1, currentColor, gainLength);
         
     }
     else if (LEDArray(x, y, z-1) == currentColor) {
@@ -1158,10 +1158,10 @@ void snakeGame() {
         y2 = y;
         z2 = z;
         
-        if (addLength && eatenFood != 100) {
-            food[eatenFood] = {
-            }
-        }
+//        if (addLength && eatenFood != 100) {
+//            food[eatenFood] = {
+//            }
+//        }
         
         
         if (millis() - moveTimer > 2000) {
