@@ -70,11 +70,12 @@ void snakeGame();
 void someThing();
 void lights();
 void test();
+void randomColors();
 uint8_t GAMEAMOUNT = 2;
-uint8_t ANIMATIONAMOUNT = 4;
+uint8_t ANIMATIONAMOUNT = 5;
 uint8_t INTERACTIVEANIMATIONSAMOUNT = 1;
 //store all functions in here after declaration
-void (*appFunctions[3][4])() {{lightCube, snow, lights, test}, {someThing},  {dodgeGame, snakeGame}};
+void (*appFunctions[3][5])() {{lightCube, snow, randomColors, lights, test}, {someThing},  {dodgeGame, snakeGame}};
 //String appFunctions[] = {"dodgeGame"};
 /**************************************************************************
  *
@@ -732,8 +733,8 @@ void mainSwitch(mainStates state) {
                 break;
             }
             y=0;
-            drawNumber(stateSwitch + 1, 5, 5, 0, LEFT, 0xF0F0);
-            drawNumber(stateSwitch + 1, 5, 5, 1, LEFT, 0xF0F0);
+            drawNumber(stateSwitch + 1, 5, 5, 0, FORWARD, 0xF0F0);
+            drawNumber(stateSwitch + 1, 5, 5, 1, FORWARD, 0xF0F0);
 
             break;
             
@@ -760,8 +761,8 @@ void mainSwitch(mainStates state) {
             else if (c == PS2_ENTER){
                 appFunctions[0][i]();
             }
-            drawNumber(i + 1, 5, 5, 0, LEFT, 0xFFFF);
-            drawNumber(i + 1, 5, 5, 1, LEFT, 0xFFFF);
+            drawNumber(i + 1, 5, 5, 0, FORWARD, 0xFFFF);
+            drawNumber(i + 1, 5, 5, 1, FORWARD, 0xFFFF);
 
             break;
             
@@ -787,8 +788,8 @@ void mainSwitch(mainStates state) {
             else if (c == PS2_ENTER){
             appFunctions[2][i]();
             }
-            drawNumber(i + 1, 5, 5, 0, LEFT, 0xFFFF);
-            drawNumber(i + 1, 5, 5, 1, LEFT, 0xFFFF);
+            drawNumber(i + 1, 5, 5, 0, FORWARD, 0xFFFF);
+            drawNumber(i + 1, 5, 5, 1, FORWARD, 0xFFFF);
 
             break;
         
@@ -814,8 +815,8 @@ void mainSwitch(mainStates state) {
             else if (c == PS2_ENTER){
                 appFunctions[1][i]();
             }
-            drawNumber(i + 1, 5, 5, 0, LEFT, 0xFFFF);
-            drawNumber(i + 1, 5, 5, 1, LEFT, 0xFFFF);
+            drawNumber(i + 1, 5, 5, 0, FORWARD, 0xFFFF);
+            drawNumber(i + 1, 5, 5, 1, FORWARD, 0xFFFF);
             
             break;
             
@@ -1072,12 +1073,11 @@ void MoveLED(uint8_t x, uint8_t y, uint8_t z, uint16_t currentColor, boolean gai
         }
     }
     else if (gainLength) {
-        //Serial.println("ENDSNAKE");
+        set_led_pk(x, y, z, colorShifter(currentColor));
 
-        set_led_pk(x, y, z, currentColor);
     }
     else {
-        set_led_pk(x, y, z, 0);
+        set_led_pk(x, y, z - 1, 0);
     }
     
 }
@@ -1095,11 +1095,15 @@ void snakeGame() {
     uint8_t x2 = 5;
     uint8_t y2 = 3;
     uint8_t z2 = 6;
+//    uint8_t fx;
+//    uint8_t fy;
+//    uint8_t fx;
     directions direction = FORWARD;
+    uint32_t foodTimer;
     uint32_t moveTimer = millis();
     boolean addLength = false;
-    coord_t food[NUM_FOOD];
-    uint8_t eatenFood = 100;
+    //coord_t food[NUM_FOOD];
+    //uint8_t eatenFood = 100;
     
    // coord_t snake[ MAX_SNAKE_LEN ];
    // coord_t * sk_head = snake;
@@ -1115,6 +1119,9 @@ void snakeGame() {
         }
     
         if (!start) {
+//            fx = rand() % 12;
+//            fy = rand() % 12;
+//            fz = rand() % 12;
             clearCube();
             //if (c != ']') {
             for (int i = 0; i < 4; i++) {
@@ -1160,9 +1167,14 @@ void snakeGame() {
         
 //        if (addLength && eatenFood != 100) {
 //            food[eatenFood] = {
+//
+//
 //            }
 //        }
-        
+        if (millis() - foodTimer >= 15000 && addLength) {
+            
+            foodTimer += 15000;
+        }
         
         if (millis() - moveTimer > 2000) {
             if (!(x == 12 || z == 12 || y == 12)) {
@@ -1196,7 +1208,9 @@ void snakeGame() {
                 break;
                // if (
         }
-        
+//                if (x == fx && y == fy, && fz == z) {
+//                    addLength = true;
+//                }
         MoveLED(x2, y2, z2, 0xFFFF, addLength);
             moveTimer += 2000;
                 
@@ -1274,6 +1288,7 @@ void lightCube() {
         }
         }
 }
+    clearCube();
 }
 /***************************************************************************
  *
@@ -1491,7 +1506,7 @@ void snow() {
                 moveRow(j, i, DOWN, 1, true);
             }
             else {
-                moveRow(j, i, DOWN, 1, true);
+                moveRow(j, i, DOWN, 1, false);
             }
         }
     }
@@ -1523,6 +1538,34 @@ void drawBall( int x, int y, int z, uint16_t color){
             }
         }
     }
+}
+
+/***************************************************************************
+ *
+ *   Sub Seperator
+ *
+ ***************************************************************************/
+
+void randomColors() {
+    while (true) {
+        char c;
+        if (keyboard.available()){
+            
+            c=keyboard.read();
+            if (c == PS2_ESC) {
+                break;
+            }
+        }
+
+    for (int i = 0; i < 12; i++) {
+        for (int j = 0; j < 12; j++) {
+            for (int k = 0; k < 12; k++) {
+                set_led_pk(i, j, k, rand() % 65535);
+            }
+        }
+    }
+    }
+    clearCube();
 }
 
 /***************************************************************************
