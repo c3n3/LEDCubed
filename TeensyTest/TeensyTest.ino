@@ -70,12 +70,13 @@ void snakeGame();
 void someThing();
 void lights();
 void test();
+void swirl();
 void randomColors();
 uint8_t GAMEAMOUNT = 2;
 uint8_t ANIMATIONAMOUNT = 5;
 uint8_t INTERACTIVEANIMATIONSAMOUNT = 1;
 //store all functions in here after declaration
-void (*appFunctions[3][5])() {{lightCube, snow, randomColors, lights, test}, {someThing},  {dodgeGame, snakeGame}};
+void (*appFunctions[3][5])() {{lightCube, snow, randomColors, swirl, test}, {someThing},  {dodgeGame, snakeGame}};
 //String appFunctions[] = {"dodgeGame"};
 /**************************************************************************
  *
@@ -367,6 +368,27 @@ uint16_t directionalCubeArray(uint8_t firstCord, uint8_t secondCord, uint8_t thi
         }
     }
 
+
+}
+
+/***************************************************************************
+ *
+ *   Sub Seperator
+ *
+ ***************************************************************************/
+
+void rotate(uint16_t t) {
+    uint32_t timer  = millis();
+    uint32_t R0Time = millis();
+    uint32_t R1Time = millis();
+    uint32_t R2Time = millis();
+    uint32_t R3Time = millis();
+    uint32_t R4Time = millis();
+    uint32_t R5Time = millis();
+    
+    while (millis() - timer < t) {
+        
+    }
 
 }
 
@@ -872,10 +894,11 @@ void dodgeGame() {
         if (millis() - dificultyTimer > 5000 && start) {
             
             ledCount++;
+            Serial.print(ledCount);
             dificultyTimer += 5000;
             
         }
-        uint16_t delayTime = 500;
+        uint16_t delayTime = 150;
     
     
     if (key != 7){
@@ -896,6 +919,7 @@ void dodgeGame() {
     if (keyboard.available()){
         start = true;
         c=keyboard.read();
+        Serial.print(c);
         if (c == PS2_ESC) {
             break;
         }
@@ -939,9 +963,8 @@ void dodgeGame() {
     }
     
         if (start) {
-            dificultyTimer = millis();
     if (millis() - timer0 > delayTime){
-        
+        Serial.print(ledCount);
         setRandomLED(ledCount, BACKWARD, 0xFFF);
 
         
@@ -950,6 +973,7 @@ void dodgeGame() {
                 
                 moveRow(i, j, BACKWARD, 0xFFF);
             }
+            
         }
         timer0 += delayTime;
     }
@@ -1068,6 +1092,7 @@ void MoveLED(uint8_t x, uint8_t y, uint8_t z, uint16_t currentColor, boolean gai
     else if (LEDArray(x, y, z-1) == currentColor) {
         set_led_pk(x, y, z, currentColor);
         //Serial.println("z-1");
+        //uses underflow
         if (z-1 < 12) {
             MoveLED(x, y, z-1, currentColor, gainLength);
         }
@@ -1076,9 +1101,9 @@ void MoveLED(uint8_t x, uint8_t y, uint8_t z, uint16_t currentColor, boolean gai
         set_led_pk(x, y, z, colorShifter(currentColor));
 
     }
-    else {
-        set_led_pk(x, y, z - 1, 0);
-    }
+  else {
+      set_led_pk(x, y, z - 1, 0);
+  }
     
 }
 
@@ -1102,8 +1127,8 @@ void snakeGame() {
     uint32_t foodTimer;
     uint32_t moveTimer = millis();
     boolean addLength = false;
-    //coord_t food[NUM_FOOD];
-    //uint8_t eatenFood = 100;
+    coord_t food[NUM_FOOD];
+    uint8_t eatenFood = 100;
     
    // coord_t snake[ MAX_SNAKE_LEN ];
    // coord_t * sk_head = snake;
@@ -1171,12 +1196,13 @@ void snakeGame() {
 //
 //            }
 //        }
-        if (millis() - foodTimer >= 15000 && addLength) {
-            
-            foodTimer += 15000;
+        if (addLength) {
+            food[eatenFood].x;
+            food[eatenFood].y;
+            food[eatenFood].z;
         }
         
-        if (millis() - moveTimer > 2000) {
+        if (millis() - moveTimer > 750) {
             if (!(x == 12 || z == 12 || y == 12)) {
         switch (direction) {
             case FORWARD:
@@ -1212,7 +1238,7 @@ void snakeGame() {
 //                    addLength = true;
 //                }
         MoveLED(x2, y2, z2, 0xFFFF, addLength);
-            moveTimer += 2000;
+            moveTimer += 750;
                 
             }
             
@@ -1634,6 +1660,70 @@ void spiral() {
       delay(30);
     }
   }
+}
+/***************************************************************************
+ *
+ *   Sub Seperator
+ *
+ ***************************************************************************/
+
+void swirl() {
+    boolean start = false;
+    clearCube();
+    uint32_t timer = millis();
+    while (true) {
+        char c;
+
+        if (keyboard.available()){
+            c=keyboard.read();
+            if (c == PS2_ESC) {
+                break;
+            }
+        }
+        if (!start) {
+        for (int i = 0; i < 12; i++) {
+            directionalCubeArray(i, i, 11, FORWARD, true, 0xF000);
+            directionalCubeArray(i, i, 11, BACKWARD, true,  0xFF00);
+            directionalCubeArray(i, i, 11, LEFT, true, 0xFFFF);
+            directionalCubeArray(i, i, 11, RIGHT, true, 0xF00F);
+
+        }
+            
+            for (int i = 1; i < 11; i++) {
+                directionalCubeArray(i, 11-i, 10, FORWARD, true, 0xF800);
+                directionalCubeArray(i, 11-i, 10, BACKWARD, true,  0x0770);
+                directionalCubeArray(i, 11-i, 10, LEFT, true, 0x00EF);
+                directionalCubeArray(i, 11-i, 10, RIGHT, true, 0xF00F);
+            }
+        
+            start = true;
+        }
+        //uint16_t directionalCubeArray(uint8_t firstCord, uint8_t secondCord, uint8_t thirdCord, directions direction, boolean setLED = false, uint16_t color = 0){
+
+        if (millis() - timer > 100) {
+            for (int k = 0; k < 12; k++) {
+                moveRow(11, k, FORWARD);
+                moveRow(11, k, BACKWARD);
+               moveRow(11, k, LEFT);
+               moveRow(11, k, RIGHT);
+
+            }
+            //void moveRow(uint8_t firstCord, uint8_t secondCord,  directions direction,  uint16_t specificColor = 1, boolean collective = false, uint8_t start = 0, uint8_t end = 11, uint16_t color = 1){
+            for (int i = 0; i < 4; i++) {
+            for (int k = 1; k < 11; k++) {
+                moveRow(1, k, directions(i+1), 1, false, 1, 10);
+            }
+            }
+            
+        
+            timer = millis();
+        }
+    }
+        //DO STUFF HERE
+        
+        
+    
+    clearCube();
 }
 
 /***************************************************************************
