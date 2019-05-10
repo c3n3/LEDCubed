@@ -71,12 +71,13 @@ void someThing();
 void lights();
 void test();
 void swirl();
+void pong();
 void randomColors();
-uint8_t GAMEAMOUNT = 2;
-uint8_t ANIMATIONAMOUNT = 5;
-uint8_t INTERACTIVEANIMATIONSAMOUNT = 1;
+#define GAMEAMOUNT 3
+#define ANIMATIONAMOUNT 5
+#define INTERACTIVEANIMATIONSAMOUNT 1
 //store all functions in here after declaration
-void (*appFunctions[3][5])() {{lightCube, snow, randomColors, swirl, test}, {someThing},  {dodgeGame, snakeGame}};
+void (*appFunctions[3][5])() {{lightCube, snow, randomColors, swirl, test}, {someThing},  {dodgeGame, snakeGame, pong}};
 //String appFunctions[] = {"dodgeGame"};
 /**************************************************************************
  *
@@ -173,6 +174,11 @@ void set_led( uint8_t x, uint8_t y, uint8_t z, uint16_t r, uint16_t g, uint16_t 
 void d(uint16_t t){
     uint32_t temp = millis();
     while (millis() - temp < t) {
+        if (keyboard.available()) {
+            if (keyboard.read() == PS2_ESC) {
+                break;
+            }
+        }
     }
 }
 
@@ -190,6 +196,20 @@ uint16_t pk_color(uint16_t r, uint16_t g, uint16_t b) {
     ((b & 0x00F8) >> 3 );
 }
 
+
+/***************************************************************************
+ *
+ *   Sub Seperator
+ *
+ ***************************************************************************/
+// red goes up to 31
+//blue to 31
+//green up to 63
+uint16_t pk_low(uint16_t r, uint16_t g, uint16_t b) {
+    return ((r & 0x001F) << 11 ) |
+    ((g & 0x003F) << 5 ) |
+    ((b & 0x001F));
+}
 /***************************************************************************
  *
  *   Sub Seperator
@@ -300,7 +320,7 @@ void setAdressLED( uint16_t address, uint16_t c){
  ***************************************************************************/
 
 
-uint16_t setPackedPackedLED(uint16_t coord, uint16_t c) {
+void setPackedPackedLED(uint16_t coord, uint16_t c) {
     //set_led_pk((coord & 0x000F), (coord & 0x00F0), (coord & 0x0F00), c);
     px_buf[ ((coord & 0x0F00) >> 8) * NUM_LEDS_LYR + NUM_LEDS_DIM * (coord & 0x000F) + ((coord & 0x00F0) >> 4)] = c;
 }
@@ -711,6 +731,15 @@ void DrawFigure(int x1, int y1, int z1, int x2, int y2, int z2) {
         }
     }
 }
+void clearMost(uint8_t howMany, directions backSide) {
+    for (int i = 0; i < 12; i++) {
+        for (int j = 0; j < 12; j++) {
+            for (int k = 11; k > 11-howMany; k--) {
+                directionalCubeArray(i, j, k, backSide, true);
+            }
+        }
+    }
+}
 
 /**************************************************************************
  *                                                                        *
@@ -725,36 +754,56 @@ void DrawFigure(int x1, int y1, int z1, int x2, int y2, int z2) {
 void mainSwitch(mainStates state) {
     int i = 0;
     uint8_t stateSwitch = 0;
+    uint32_t backgroundTimer = millis();
     while(true) {
+        
+        if (millis() - backgroundTimer > 200) {
+            
+           // setRandomLED(3, DOWN, 0xFFFF);
+            for (uint8_t j = 0; j < 12; j++) {
+            for (uint8_t i = 0; i < 12; i++) {
+             //   moveRow(i, j, DOWN);
+            }
+            backgroundTimer += 200;
+        }
+        }
+        
         char c;
         
         if (keyboard.available()) {
             c = keyboard.read();
             //i = c - '0';
         }
+        for (int i = 0; i < 12; i++) {
+            for (int j = 0; j < 12; j++) {
+                for (int k = 0; k < 6; k++) {
+                    set_led_pk(i, j, k + 6, 0);
+                }
+            }
+        }
         
     switch (state) {
-            int y;
+            //int y;
         case TOP:
 
             if (c == PS2_RIGHTARROW) {
-                clearCube();
+                clearMost(6, BACKWARD);
 
                 stateSwitch = shifter(stateSwitch, RIGHT, TOP);
             }
             if (c == PS2_LEFTARROW) {
-                clearCube();
+                clearMost(6, BACKWARD);
 
                 stateSwitch = shifter(stateSwitch, LEFT, TOP);
 
             }
             else if (c == PS2_ENTER) {
                 state = mainStates(stateSwitch);
-                clearCube();
+                clearMost(6, BACKWARD);
                 i=0;
                 break;
             }
-            y=0;
+            //y=0;
             drawNumber(stateSwitch + 1, 5, 5, 0, FORWARD, 0xF0F0);
             drawNumber(stateSwitch + 1, 5, 5, 1, FORWARD, 0xF0F0);
 
@@ -764,19 +813,19 @@ void mainSwitch(mainStates state) {
 
             if (c == PS2_ESC) {
                 state = TOP;
-                clearCube();
+                clearMost(6, BACKWARD);
                 break;
 
             }
             
             else if (c == PS2_LEFTARROW) {
                 i = shifter(i, LEFT, ANIMATIONS);
-                clearCube();
+                clearMost(6, BACKWARD);
 
             }
             else if (c == PS2_RIGHTARROW) {
                 i = shifter(i, RIGHT, ANIMATIONS);
-                clearCube();
+                clearMost(6, BACKWARD);
 
             }
             
@@ -792,18 +841,17 @@ void mainSwitch(mainStates state) {
 
             if (c == PS2_ESC) {
                 state = TOP;
-                clearCube();
+                clearMost(6, BACKWARD);
                 break;
             }
             
             else if (c == PS2_LEFTARROW) {
                 i = shifter(i, LEFT, GAMES);
-                clearCube();
-
+                clearMost(6, BACKWARD);
             }
             else if (c == PS2_RIGHTARROW) {
                 i = shifter(i, RIGHT, GAMES);
-                clearCube();
+                clearMost(6, BACKWARD);
 
             }
             
@@ -819,18 +867,18 @@ void mainSwitch(mainStates state) {
             
             if (c == PS2_ESC) {
                 state = TOP;
-                clearCube();
+                clearMost(6, BACKWARD);
                 break;
             }
             
             else if (c == PS2_LEFTARROW) {
                 i = shifter(i, LEFT, INTERACTIVEANIMATIONS);
-                clearCube();
+                clearMost(6, BACKWARD);
                 
             }
             else if (c == PS2_RIGHTARROW) {
                 i = shifter(i, RIGHT, INTERACTIVEANIMATIONS);
-                clearCube();
+                clearMost(6, BACKWARD);
                 
             }
             
@@ -848,6 +896,7 @@ void mainSwitch(mainStates state) {
 }
 }
 
+
 /**************************************************************************
  *
  *
@@ -860,12 +909,12 @@ void mainSwitch(mainStates state) {
 
 
 
-// Add loop code
 void loop()
 {
+
     mainSwitch(TOP);
   //this is curently just a simple 'dodge' game
-    
+
 } //end loop
 
 
@@ -927,10 +976,8 @@ void dodgeGame() {
     
     if (c == PS2_UPARROW){
         for (int i = 0; i < 12; i++){
-            
             moveRow(i, 1, UP, 0xF00, true);
             moveRow(i, 2, UP, 0xF00, true);
-
             c = '[';
         }
     }
@@ -938,16 +985,13 @@ void dodgeGame() {
         for (int i = 0; i < 12; i++){
             moveRow(i, 1, DOWN, 0xF00, true);
             moveRow(i, 2, DOWN, 0xF00, true);
-
             c = '[';
         }
     }
     else if (c == PS2_LEFTARROW){
         for (int i = 0; i < 12; i++){
-            
             moveRow(1, i, LEFT, 0xF00, true);
             moveRow(2, i, LEFT, 0xF00, true);
-
             c = '[';
         }
     }
@@ -956,8 +1000,6 @@ void dodgeGame() {
             
             moveRow(10, i, RIGHT, 0xF00, true);
             moveRow(9, i, RIGHT, 0xF00, true);
-
-
             c = '[';
         }
     }
@@ -991,66 +1033,42 @@ void dodgeGame() {
  *   Sub Seperator t
  *
  ***************************************************************************/
+void dropMatch() {
+    for (int p = 0; p < 3; p++) {
+
+    for (int k = 0; k < 12; k++) {
+        for (int j = 0; j < 12; j++) {
+            for (int i = 0; i < 12; i++) {
+                if (LEDArray(i, k, j) == 0) {
+        set_led_pk(i, j, k, 0xF800);
+                }
+            }
+        }
+    }
+    d(250);
+    clearCube();
+        d(250);
+
+    }
+}
+void lightMatch() {
+    dropMatch();
+}
+void pourGasoline() {
+    lightMatch();
+}
 
 uint16_t colorShifter(uint16_t currentColor) {
-    
-    uint8_t r  = (currentColor & 0xF800) >> 8;
-    uint16_t g = (currentColor & 0x07E0) >> 3;
-    uint16_t b = (currentColor & 0x001F) << 3;
-//    Serial.println('c');
-//    Serial.print(currentColor);
-//    Serial.println();
-    b = b - 8; //better way
-    
-
-//    Serial.print('g');
-//    Serial.print(g);
-//   Serial.print('b');
-//    Serial.println(b);
-//    Serial.println(phase);
- /*   switch (phase) {
-        case 0:
-            if (r > 16) {
-                r = r - 14;
-            }
-            else if (g > 16) {
-                g -= 14;
-            }
-            else {
-                phase = 1;
-            }
-            break;
-            
-        case 1:
-            if (b > 16) {
-                b -= 14;
-                r += 14;
-            }
-            else if (g < 244) {
-                g += 14;
-            }
-            else {
-                phase = 2;
-            }
-            break;
-            
-        case 2:
-            
-            if (b < 244) {
-                b += 14;
-            }
-            else {
-                phase = 0;
-            }
-            
-            break;
-        default:
-            break;
+    boolean state = false;
+    uint8_t r  = (currentColor & 0xF800) >> 11;
+    uint16_t g = (currentColor & 0x07E0) >> 5;
+    uint16_t b = (currentColor & 0x001F);
+    if (state) {
+        if (b != 31) { b++; } else if (r != 63) { r++; } else { state = true; }
+    } else {
+    if (b != 0) { b--; } else if (r != 0) { r--; } else {state = false;}
     }
-    
-    Serial.print(pk_color(r, g, b));*/
-    return pk_color(r, g, b);
-    
+    return pk_low(r, g, b);
 }
 
 void MoveLED(uint8_t x, uint8_t y, uint8_t z, uint16_t currentColor, boolean gainLength) {
@@ -1059,7 +1077,6 @@ void MoveLED(uint8_t x, uint8_t y, uint8_t z, uint16_t currentColor, boolean gai
 //    Serial.println(0xFFFF);
 //    Serial.println(colorShifter(0xFFFF));
 //    Serial.println(LEDArray(x, y, z));
-    Serial.println(z);
 
     if (LEDArray(x + 1, y, z) == currentColor) {
         set_led_pk(x, y, z, currentColor);
@@ -1098,11 +1115,11 @@ void MoveLED(uint8_t x, uint8_t y, uint8_t z, uint16_t currentColor, boolean gai
         }
     }
     else if (gainLength) {
-        set_led_pk(x, y, z, colorShifter(currentColor));
+        set_led_pk(x, y, z, currentColor);
 
     }
   else {
-      set_led_pk(x, y, z - 1, 0);
+      set_led_pk(x, y, z, 0);
   }
     
 }
@@ -1110,25 +1127,27 @@ void MoveLED(uint8_t x, uint8_t y, uint8_t z, uint16_t currentColor, boolean gai
 
 
 void snakeGame() {
-#define MAX_SNAKE_LEN 50
-#define NUM_FOOD 5
+#define NUM_FOOD 10
     boolean start = false;
     uint16_t color = 0xFFFF;
+    boolean toggle = false;
     uint8_t x = 5;
     uint8_t y = 5;
     uint8_t z = 4;
     uint8_t x2 = 5;
     uint8_t y2 = 3;
     uint8_t z2 = 6;
+    uint16_t speed = 500;
+    uint16_t length = 4;
 //    uint8_t fx;
 //    uint8_t fy;
 //    uint8_t fx;
     directions direction = FORWARD;
-    uint32_t foodTimer;
+    uint32_t foodTimer = millis();
     uint32_t moveTimer = millis();
     boolean addLength = false;
     coord_t food[NUM_FOOD];
-    uint8_t eatenFood = 100;
+    boolean endGame = false;
     
    // coord_t snake[ MAX_SNAKE_LEN ];
    // coord_t * sk_head = snake;
@@ -1141,27 +1160,56 @@ void snakeGame() {
             if (c == PS2_ESC) {
                 break;
             }
+            
+            if (c == PS2_LEFTARROW && direction == RIGHT) {
+                c = ']';
+            } else if (c == PS2_RIGHTARROW && direction == LEFT) {
+                c = ']';
+            } else if (c == PS2_DOWNARROW && direction == FORWARD) {
+                c = ']';
+            } else if (c == PS2_UPARROW && direction == BACKWARD) {
+                c = ']';
+            } else if (c == '1' && direction == DOWN) {
+                c = ']';
+            } else if (c == '0' && direction == UP) {
+                c = ']';
+            }
         }
+
     
         if (!start) {
-//            fx = rand() % 12;
-//            fy = rand() % 12;
-//            fz = rand() % 12;
             clearCube();
-            //if (c != ']') {
             for (int i = 0; i < 4; i++) {
                 set_led_pk(5, 5, 4 - i, color);
-
-
                 color = colorShifter(color);
-                
-               // Serial.print((color));
+            }
+            for (int i = 0; i < NUM_FOOD; i++) {
+                while (true) {
+                food[i].x = rand() % 12;
+                food[i].y = rand() % 12;
+                food[i].z = rand() % 12;
+                    if (LEDArray(food[i].x, food[i].y, food[i].z) == 0) {
+                        break;
+                    }
+                }
             }
             start = true;
-
-            //}
         }
-
+        if (millis() - foodTimer > 900) {
+            if (toggle) {
+                for (int i = 0; i < NUM_FOOD; i++ ) {
+                    set_led_pk(food[i].x, food[i].y, food[i].z, 0xF830);
+                }
+                toggle = !toggle;
+            } else {
+                for (int i = 0; i < NUM_FOOD; i++ ) {
+                    set_led_pk(food[i].x, food[i].y, food[i].z, 0x031F);
+                }
+                toggle = !toggle;
+            }
+            foodTimer += 900;
+        }
+        
         switch (c) {
             case PS2_LEFTARROW:
                 direction = LEFT;
@@ -1169,10 +1217,10 @@ void snakeGame() {
             case PS2_RIGHTARROW:
                 direction = RIGHT;
                 break;
-            case PS2_ENTER:
+            case '0':
                 direction = DOWN;
                 break;
-            case '\\':
+            case '1':
                 direction = UP;
                 break;
             case PS2_DOWNARROW:
@@ -1196,57 +1244,70 @@ void snakeGame() {
 //
 //            }
 //        }
-        if (addLength) {
-            food[eatenFood].x;
-            food[eatenFood].y;
-            food[eatenFood].z;
-        }
         
-        if (millis() - moveTimer > 750) {
+
+        if (millis() - moveTimer > speed && !endGame) {
+            if (length >= 7 && speed > 200) {
+                speed -= 90;
+                length = 0;
+            }
             if (!(x == 12 || z == 12 || y == 12)) {
         switch (direction) {
             case FORWARD:
-                set_led_pk(x, y, z + 1, 0xFFFF);
                 z++;
                 break;
             case BACKWARD:
-                set_led_pk(x, y, z - 1, 0xFFFF);
                 z--;
                 break;
             case UP:
-                set_led_pk(x, y+1, z, 0xFFFF);
                 y++;
                 break;
             case DOWN:
-                set_led_pk(x, y-1, z, 0xFFFF);
                 y--;
                 break;
             case LEFT:
-                set_led_pk(x-1, y, z, 0xFFFF);
                 x--;
                 break;
             case RIGHT:
-                set_led_pk(x+1, y, z, 0xFFFF);
                 x++;
                 break;
                 
             default:
                 break;
-               // if (
-        }
-//                if (x == fx && y == fy, && fz == z) {
-//                    addLength = true;
-//                }
-        MoveLED(x2, y2, z2, 0xFFFF, addLength);
-            moveTimer += 750;
+                    }
                 
+                for (int i = 0; i < NUM_FOOD; i++) {
+                    if (food[i].x == x && food[i].y == y && food[i].z == z) {
+                        while (true) {
+                        food[i].x = rand() % 12;
+                        food[i].y = rand() % 12;
+                        food[i].z = rand() % 12;
+                        addLength = true;
+                            if (LEDArray(food[i].x, food[i].y, food[i].z) == 0) {
+                                length++;
+                                break;
+                            }
+                        }
+                        
+                    }
+                    
+                }
+                if (LEDArray(x, y, z) != 0 && addLength != true || (x - 1 >= 11 || y - 1 >= 11 || z - 1 >= 11)) {
+                    endGame = true;
+                    pourGasoline();
+                } else {
+                set_led_pk(x, y, z, 0xFFFF);
+                
+        MoveLED(x2, y2, z2, 0xFFFF, addLength);
+                addLength = false;
+            moveTimer += speed;
+                }
             }
-            
-            
+
         }
     
     }
-#undef MAX_SNAKE_LEN
+#undef NUM_FOOD
 }
 
 /***************************************************************************
@@ -1564,6 +1625,16 @@ void drawBall( int x, int y, int z, uint16_t color){
             }
         }
     }
+}
+
+/***************************************************************************
+ *
+ *   Sub Seperator
+ *
+ ***************************************************************************/
+
+void pong() {
+    
 }
 
 /***************************************************************************
