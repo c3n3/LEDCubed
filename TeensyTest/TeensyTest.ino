@@ -49,7 +49,10 @@ typedef struct{
     uint8_t z;
 } coord_t;
 
-
+typedef struct{
+    uint8_t magnitude;
+    directions direction;
+} vector_t;
 
 /**************************************************************************
  *
@@ -164,6 +167,17 @@ void set_led( uint8_t x, uint8_t y, uint8_t z, uint16_t r, uint16_t g, uint16_t 
     ((b & 0x00F8) >> 3 );
 }
 
+/***************************************************************************
+ *
+ *   Sub Seperator
+ *
+ ***************************************************************************/
+
+void protected_set_led_pk( uint8_t x, uint8_t y, uint8_t z, uint16_t c){
+    if (!(x > 11 || y > 11 || z > 11)) {
+    px_buf[ z * NUM_LEDS_LYR + NUM_LEDS_DIM * x + y]  = c;
+    }
+}
 
 /***************************************************************************
  *
@@ -488,11 +502,54 @@ void moveRow(uint8_t firstCord, uint8_t secondCord,  directions direction,  uint
  *
  ***************************************************************************/
 
+void eradicate(uint16_t color) {
+    for (uint8_t i = 0; i < 12; i++) {
+        for (uint8_t j = 0; j < 12; j++) {
+            for (uint8_t k = 0; k < 12; k++) {
+                if (LEDArray(i, j, k) == color) {
+                    set_led(i, j, k, 0, 0, 0);
+                }
+            }
+        }
+    }
+}
+
+/***************************************************************************
+ *
+ *   Sub Seperator
+ *
+ ***************************************************************************/
+
 void setRandomLED(uint8_t leds, directions direction, uint16_t color, boolean threeD = false) {
     if (!threeD) {
     for (uint8_t i = 0; i < leds; i++) {
         directionalCubeArray(rand() % 12, rand() % 12, 0, direction, true, color);
     }
+    }
+}
+/***************************************************************************
+ *
+ *   Sub Seperator
+ *
+ ***************************************************************************/
+
+//no up or down yet
+void angledMove(uint8_t rise, uint8_t run, directions direction, uint16_t color) {
+    //rise
+    for (uint8_t k = 0; k < rise; k++) {
+        for (uint8_t i = 0; i < 12; i++) {
+            for (uint8_t j = 0; j < 12; j++) {
+                moveRow(i, j, UP, color);
+            }
+        }
+    }
+    //rise
+    for (uint8_t k = 0; k < run; k++) {
+        for (uint8_t i = 0; i < 12; i++) {
+            for (uint8_t j = 0; j < 12; j++) {
+                moveRow(i, j, direction, color);
+            }
+        }
     }
 }
 
@@ -637,7 +694,7 @@ void drawNumber(int number, int x1, int y1, int z1, directions viewpoint, uint16
 //DrawFigure
 //Coordinate 1: (x1,y2,z2)
 //Coordinate 2: (x2,y2,z2);
-void DrawFigure(int x1, int y1, int z1, int x2, int y2, int z2) {
+void DrawFigure(int x1, int y1, int z1, int x2, int y2, int z2, uint16_t color) {
     int xDist = abs(x1 - x2);
     int yDist = abs(y1 - y2);
     int zDist = abs(z1 - z2);
@@ -658,75 +715,75 @@ void DrawFigure(int x1, int y1, int z1, int x2, int y2, int z2) {
     }
     if (xDist == 0) { // if the x coordinates are the same, the shape will be a square will a constant x value
         for (int i = y1; i <= y2; i++){
-            set_led(x1,i,z1,255,255,255);
+            set_led_pk(x1,i,z1,color);
             //delay(200);
-            set_led(x1,i,z2,255,255,255);
+            set_led_pk(x1,i,z2,color);
             //delay(200);
         }
         for (int i = z1; i <= z2; i++) {
-            set_led(x1,y1,i,255,255,255);
-            //delay(200);
-            set_led(x1,y2,i,255,255,255);
+            set_led_pk(x1,y1,i,color);
+            //delay_pk(200);
+            set_led_pk(x1,y2,i,color);
             //delay(200);
         }
     }
     else if (yDist == 0) { // if the y coordinates are the same, the shape will be a square will a constant y value
         for (int i = x1; i <= x2; i++){
-            set_led(i,y1,z1,255,255,255);
-            //delay(200);
-            set_led(i,y1,z2,255,255,255);
+            set_led_pk(i,y1,z1,color);
+            //delay_pk(200);
+            set_led_pk(i,y1,z2,color);
             //delay(200);
         }
         for (int i = z1; i <= z2; i++) {
-            set_led(x1,y1,i,255,255,255);
-            //delay(200);
-            set_led(x2,y1,i,255,255,255);
+            set_led_pk(x1,y1,i,color);
+            //delay_pk(200);
+            set_led_pk(x2,y1,i,color);
             //delay(200);
         }
     }
     else if (zDist == 0) { // if the z coordinates are the same, the shape will be a square will a constant z value
         for (int i = x1; i <= x2; i++){
-            set_led(i,y1,z1,255,255,255);
-            //delay(200);
-            set_led(i,y2,z1,255,255,255);
+            set_led_pk(i,y1,z1,color);
+            //delay_pk(200);
+            set_led_pk(i,y2,z1,color);
             //delay(200);
         }
         for (int i = y1; i <= y2; i++) {
-            set_led(x1,i,z1,255,255,255);
-            //delay(200);
-            set_led(x2,i,z1,255,255,255);
+            set_led_pk(x1,i,z1,color);
+            //delay+pk(200);
+            set_led_pk(x2,i,z1,color);
             //delay(200);
         }
     }
     else { // if none of the x/y/z coordinates match the other points' x/y/z, then the shape will be a cube.
         for (int i = x1; i <= x2; i++){
-            set_led(i,y1,z1,255,255,255);
-            //delay(200);
-            set_led(i,y2,z1,255,255,255);
-            //delay(200);
-            set_led(i,y1,z2,255,255,255);
-            //delay(200);
-            set_led(i,y2,z2,255,255,255);
+            set_led_pk(i,y1,z1,color);
+            //delay_pk(200);
+            set_led_pk(i,y2,z1,color);
+            //delay_pk(200);
+            set_led_pk(i,y1,z2,color);
+            //delay_pk(200);
+            set_led_pk(i,y2,z2,color);
             //delay(200);
         }
         for (int i = y1; i <= y2; i++){
-            set_led(x1,i,z1,255,255,255);
-            //delay(200);
-            set_led(x2,i,z1,255,255,255);
-            //delay(200);
-            set_led(x1,i,z2,255,255,255);
-            //delay(200);
-            set_led(x2,i,z2,255,255,255);
+            set_led_pk(x1,i,z1,color);
+            //delay_pk(200);
+            set_led_pk(x2,i,z1,color);
+            //delay_pk(200);
+            set_led_pk(x1,i,z2,color);
+            //delay_pk(200);
+            set_led_pk(x2,i,z2,color);
             //delay(200);
         }
         for (int i = z1; i <= z2; i++){
-            set_led(x1,y1,i,255,255,255);
-            //delay(200);
-            set_led(x1,y2,i,255,255,255);
-            //delay(200);
-            set_led(x2,y1,i,255,255,255);
-            //delay(200);
-            set_led(x2,y2,i,255,255,255);
+            set_led_pk(x1,y1,i,color);
+            //delay_pk(200);
+            set_led_pk(x1,y2,i,color);
+            //delay_pk(200);
+            set_led_pk(x2,y1,i,color);
+            //delay_pk(200);
+            set_led_pk(x2,y2,i,color);
             //delay(200);
         }
     }
@@ -1634,7 +1691,82 @@ void drawBall( int x, int y, int z, uint16_t color){
  ***************************************************************************/
 
 void pong() {
-    
+#define PADDLE_LENGTH 3
+#define P1_COLOR 0xFFFF
+#define P2_COLOR 0xFFFE
+#define BALL_COLOR 0x001F
+    boolean start = false;
+    vector_t rise;
+    rise.magnitude = 0;
+    rise.direction = UP;
+    vector_t run;
+    run.magnitude = 0;
+    run.direction = FORWARD;
+    coord_t player1;
+    player1.x = 11;
+    player1.y = 4;
+    player1.z = 4;
+    coord_t player2;
+    player2.x = 0;
+    player2.y = 4;
+    player2.z = 4;
+    coord_t ball;
+    ball.x = 4;
+    ball.y = 4;
+    ball.z = 4;
+    while (true) {
+        char c = ']';
+        if (keyboard.available()){
+            
+            c=keyboard.read();
+            if (c == PS2_ESC) {
+                break;
+            }
+        }
+        if (!start) {
+            for (uint8_t i = 3; i > 0; i--) {
+                protected_set_led_pk(ball.x - 2 + i, ball.y, ball.z, BALL_COLOR);
+                protected_set_led_pk(ball.x, ball.y, ball.z - 2 + i, BALL_COLOR);
+                protected_set_led_pk(ball.x, ball.y - 2 + i, ball.z, BALL_COLOR);
+
+            }
+        }
+        // MOve the paddles
+        switch (c) {
+                //ifs use underflow
+            case 's': if (!(player2.y + PADDLE_LENGTH == 11)) { player2.y++; eradicate(P2_COLOR); } break;
+            case 'z': if (!(player2.z == 0)) { player2.z--; eradicate(P2_COLOR); } break;
+            case 'q': if (!(player2.z + PADDLE_LENGTH == 11)) { player2.z++; eradicate(P2_COLOR); } break;
+            case 'a': if (!(player2.y == 0)) { player2.y--; eradicate(P2_COLOR); } break;
+
+            case '5': if (!(player1.y + PADDLE_LENGTH == 11)) { player1.y++; eradicate(P1_COLOR); } break;
+            case '3': if (!(player1.z == 0)) { player1.z--; eradicate(P1_COLOR); } break;
+            case '9': if (!(player1.z + PADDLE_LENGTH == 11)) { player1.z++; eradicate(P1_COLOR); } break;
+            case '6': if (!(player1.y == 0)) { player1.y--; eradicate(P1_COLOR); } break;
+            default:
+                break;
+        }
+        for (uint8_t i = 0; i < rise.magnitude; i++) {
+            for (uint8_t firstDeminsion = 0; firstDeminsion < 12; firstDeminsion++) {
+                for (uint8_t secondDeminsion = 0; secondDeminsion < 12; secondDeminsion++) {
+                    switch (rise.direction) {
+                        case LEFT: if (ball.x != 0) { ball.x--; } break;
+                            
+                        default:
+                            break;
+                    }
+                }
+            }
+        }
+        //draw paddles
+        DrawFigure(player1.x, player1.y, player1.z, player1.x, player1.y + PADDLE_LENGTH, player1.z + PADDLE_LENGTH, P1_COLOR);
+        DrawFigure(player2.x, player2.y, player2.z, player2.x, player2.y + PADDLE_LENGTH, player2.z + PADDLE_LENGTH, P2_COLOR);
+    }
+    clearCube();
+#undef P2_COLOR
+#undef P1_COLOR
+#undef PADDLE_LENGTH
+#undef BALL_COLOR
 }
 
 /***************************************************************************
@@ -1840,13 +1972,13 @@ void test() {
  ***************************************************************************/
 /*
  void NAME() {
- while (!kill) {
+ while (true) {
     char c;
     if (keyboard.available()){
  
         c=keyboard.read();
         if (c == PS2_ESC) {
-            kill = true;
+            break;
         }
     }
 
@@ -1854,7 +1986,6 @@ void test() {
  
  
     }
- kill = false;
  clearCube();
  }
 */
