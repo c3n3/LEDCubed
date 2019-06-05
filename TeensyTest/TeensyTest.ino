@@ -54,6 +54,16 @@ typedef struct{
     directions direction;
 } vector_t;
 
+
+typedef struct{
+    float rise;
+    float run;
+    float zRun;
+    directions ofRise;
+    directions ofRun;
+    directions ofZRun;
+} directionalFloat_t;
+
 /**************************************************************************
  *
  *
@@ -128,8 +138,8 @@ void setup()
 {
     delay(1000);
     keyboard.begin(15, 21);
-    Serial.begin(9800);
-    Serial.println("hello");
+//    Serial.begin(9800);
+//    Serial.println("hello");
 
 
     delay(200);
@@ -1226,9 +1236,9 @@ void snakeGame() {
                 c = ']';
             } else if (c == PS2_UPARROW && direction == BACKWARD) {
                 c = ']';
-            } else if (c == '1' && direction == DOWN) {
+            } else if ((c == '1' || c == 'r') && direction == DOWN) {
                 c = ']';
-            } else if (c == '0' && direction == UP) {
+            } else if ((c == '0' || c == 'f')  && direction == UP) {
                 c = ']';
             }
         }
@@ -1268,26 +1278,15 @@ void snakeGame() {
         }
         
         switch (c) {
-            case PS2_LEFTARROW:
-                direction = LEFT;
-                break;
-            case PS2_RIGHTARROW:
-                direction = RIGHT;
-                break;
-            case '0':
-                direction = DOWN;
-                break;
-            case '1':
-                direction = UP;
-                break;
-            case PS2_DOWNARROW:
-                direction = BACKWARD;
-                break;
-            case PS2_UPARROW:
-                direction = FORWARD;
-                break;
-            default:
-                break;
+            case PS2_LEFTARROW: direction = LEFT; break;
+            case PS2_RIGHTARROW: direction = RIGHT; break;
+            case '0': direction = DOWN; break;
+            case 'f': direction = DOWN; break;
+            case 'r': direction = UP; break;
+            case '1': direction = UP; break;
+            case PS2_DOWNARROW: direction = BACKWARD; break;
+            case PS2_UPARROW: direction = FORWARD;break;
+            default: break;
         }
 
         
@@ -1694,26 +1693,40 @@ void pong() {
 #define PADDLE_LENGTH 3
 #define P1_COLOR 0xFFFF
 #define P2_COLOR 0xFFFE
-#define BALL_COLOR 0x001F
+#define BALL_COLOR 0xF81F
+#define BALL_REFRESH 200
     boolean start = false;
-    vector_t rise;
-    rise.magnitude = 0;
-    rise.direction = UP;
-    vector_t run;
-    run.magnitude = 0;
-    run.direction = FORWARD;
+//    vector_t rise;
+//    rise.magnitude = 0;
+//    rise.direction = UP;
+//    vector_t run;
+//    run.magnitude = 0;
+//    run.direction = FORWARD;
+    directionalFloat_t slope;
+    slope.ofRise = DOWN;
+    slope.ofRun = LEFT;
+    slope.ofZRun = BACKWARD;
+    slope.zRun = 1;
+    slope.rise = 1;
+    slope.run = 1;
+    float ballx = 0;
+    float bally = 3;
+    float ballz = 5;
     coord_t player1;
     player1.x = 11;
-    player1.y = 4;
-    player1.z = 4;
+    player1.y = 3;
+    player1.z = 3;
     coord_t player2;
     player2.x = 0;
-    player2.y = 4;
-    player2.z = 4;
+    player2.y = 3;
+    player2.z = 3;
     coord_t ball;
-    ball.x = 4;
-    ball.y = 4;
-    ball.z = 4;
+    ball.x = 6;
+    ball.y = 6;
+    ball.z = 6;
+    uint32_t ballTimer = millis();
+    
+    
     while (true) {
         char c = ']';
         if (keyboard.available()){
@@ -1723,15 +1736,15 @@ void pong() {
                 break;
             }
         }
-        if (!start) {
-            for (uint8_t i = 3; i > 0; i--) {
-                protected_set_led_pk(ball.x - 2 + i, ball.y, ball.z, BALL_COLOR);
-                protected_set_led_pk(ball.x, ball.y, ball.z - 2 + i, BALL_COLOR);
-                protected_set_led_pk(ball.x, ball.y - 2 + i, ball.z, BALL_COLOR);
-
-            }
+        if (((uint8_t) (ballx + 0.5) != ball.x || (uint8_t) (bally + 0.5) != ball.y || (uint8_t) (ballz + 0.5) != ball.z) || !start) {
+            
         }
-        // MOve the paddles
+
+        
+        if (!start) {
+            start = true;
+        }
+        // Move the paddles location
         switch (c) {
                 //ifs use underflow
             case 's': if (!(player2.y + PADDLE_LENGTH == 11)) { player2.y++; eradicate(P2_COLOR); } break;
@@ -1746,27 +1759,115 @@ void pong() {
             default:
                 break;
         }
-        for (uint8_t i = 0; i < rise.magnitude; i++) {
-            for (uint8_t firstDeminsion = 0; firstDeminsion < 12; firstDeminsion++) {
-                for (uint8_t secondDeminsion = 0; secondDeminsion < 12; secondDeminsion++) {
-                    switch (rise.direction) {
-                        case LEFT: if (ball.x != 0) { ball.x--; } break;
-                            
-                        default:
-                            break;
-                    }
+        
+//        for (uint8_t i = 0; i < rise.magnitude; i++) {
+//            for (uint8_t firstDeminsion = 0; firstDeminsion < 12; firstDeminsion++) {
+//                for (uint8_t secondDeminsion = 0; secondDeminsion < 12; secondDeminsion++) {
+//                    switch (rise.direction) {
+//                        case LEFT: if (ball.x != 0) { ball.x--; } break;
+//
+//                        default:
+//                            break;
+//                    }
+//                }
+//            }
+//        }
+        
+//  MOVE THE FLOATED REFERENCE POINT FOR THA BALL
+        if (millis() - ballTimer > BALL_REFRESH) {
+        switch (slope.ofRise) {
+            case FORWARD: ballz += (slope.rise); break;
+            case UP: bally += slope.rise; break;
+            case BACKWARD: ballz -= slope.rise; break;
+            case RIGHT: ballx += slope.rise; break;
+            case DOWN: bally -= slope.rise; break;
+            case LEFT: ballx -= slope.rise; break;
+            }
+            switch (slope.ofRun) {
+                case FORWARD: ballz += (slope.run); break;
+                case UP: bally += slope.run; break;
+                case BACKWARD: ballz -= slope.run; break;
+                case RIGHT: ballx += slope.run; break;
+                case DOWN: bally -= slope.run; break;
+                case LEFT: ballx -= slope.run; break;
+            }
+            switch (slope.ofZRun) {
+                case FORWARD: ballz += (slope.zRun); break;
+                case UP: bally += slope.zRun; break;
+                case BACKWARD: ballz -= slope.zRun; break;
+                case RIGHT: ballx += slope.zRun; break;
+                case DOWN: bally -= slope.zRun; break;
+                case LEFT: ballx -= slope.zRun; break;
+            }
+            ballTimer += BALL_REFRESH;
+            if (ball.x != (uint8_t) (ballx + 0.5) || ball.y != (uint8_t) (bally + 0.5) || ball.z != (uint8_t) (ballz + 0.5)) {
+                eradicate(BALL_COLOR);
+            }
+            ball.x = (uint8_t) (ballx + 0.5);
+            ball.y = (uint8_t) (bally + 0.5);
+            ball.z = (uint8_t) (ballz + 0.5);
+            if (LEDArray(ball.x, ball.y, ball.z) != 0 || ( ball.x != 0 || ball.x != 11)) {
+
+            if (ball.x > 50) {
+                ball.x = 0;
+            } else if (ball.x > 11) {
+                ball.x = 11;
+                if (rand() % 2 == 0) {
                 }
             }
+                if (ball.y > 50) {
+                    ball.y = 0;
+                } else if (ball.y > 11) {
+                    ball.y = 11;
+                }
+                if (ball.z > 50) {
+                    ball.z = 0;
+                } else if (ball.z > 11) {
+                    ball.z = 11;
+                }
+            
+            if (ball.x == 0) {
+                slope.ofRise = directions((rand() % 2) * 5);
+                slope.ofZRun = directions((rand() % 2) * 2 + 1);
+
+                slope.ofRun = RIGHT;
+            } else if (ball.x == 11) {
+                slope.ofRun = LEFT;
+            }
+                if (ball.y == 0) {
+                    slope.ofRise = UP;
+                } else if (ball.y == 11) {
+                    slope.ofRise = DOWN;
+                }
+                if (ball.z == 0) {
+                    slope.ofZRun = FORWARD;
+                } else if (ball.z == 11) {
+                    slope.ofZRun = BACKWARD;
+                }
+            
+            
+            for (uint8_t i = 3; i > 0; i--) {
+                protected_set_led_pk(ball.x - 2 + i, ball.y, ball.z, BALL_COLOR);
+                protected_set_led_pk(ball.x, ball.y, ball.z - 2 + i, BALL_COLOR);
+                protected_set_led_pk(ball.x, ball.y - 2 + i, ball.z, BALL_COLOR);
+            }
+            }
         }
-        //draw paddles
+        
+        
+        
+        //draw paddles from location
+        DrawFigure(player1.x, player1.y + PADDLE_LENGTH / 2, player1.z + PADDLE_LENGTH / 2, player1.x, player1.y + PADDLE_LENGTH - PADDLE_LENGTH / 2, player1.z + PADDLE_LENGTH - PADDLE_LENGTH / 2, P1_COLOR);
+        DrawFigure(player2.x, player2.y + PADDLE_LENGTH / 2, player2.z + PADDLE_LENGTH / 2, player2.x, player2.y + PADDLE_LENGTH - PADDLE_LENGTH / 2, player2.z + PADDLE_LENGTH - PADDLE_LENGTH / 2, P2_COLOR);
         DrawFigure(player1.x, player1.y, player1.z, player1.x, player1.y + PADDLE_LENGTH, player1.z + PADDLE_LENGTH, P1_COLOR);
         DrawFigure(player2.x, player2.y, player2.z, player2.x, player2.y + PADDLE_LENGTH, player2.z + PADDLE_LENGTH, P2_COLOR);
     }
-    clearCube();
+    clearCube(); //exit game
 #undef P2_COLOR
 #undef P1_COLOR
 #undef PADDLE_LENGTH
 #undef BALL_COLOR
+#undef BALL_REFRESH
 }
 
 /***************************************************************************
@@ -1795,6 +1896,187 @@ void randomColors() {
     }
     }
     clearCube();
+}
+/***************************************************************************
+ *
+ *   Sub Seperator
+ *
+ ***************************************************************************/
+
+void ballBounce() {
+#define PADDLE_LENGTH 3
+#define P1_COLOR 0xFFFF
+#define P2_COLOR 0xFFFE
+#define BALL_COLOR 0xF81F
+#define BALL_REFRESH 200
+    boolean start = false;
+    //    vector_t rise;
+    //    rise.magnitude = 0;
+    //    rise.direction = UP;
+    //    vector_t run;
+    //    run.magnitude = 0;
+    //    run.direction = FORWARD;
+    directionalFloat_t slope;
+    slope.ofRise = DOWN;
+    slope.ofRun = LEFT;
+    slope.ofZRun = BACKWARD;
+    slope.zRun = 1;
+    slope.rise = 1;
+    slope.run = 1;
+    float ballx = 0;
+    float bally = 3;
+    float ballz = 5;
+    coord_t player1;
+    player1.x = 11;
+    player1.y = 3;
+    player1.z = 3;
+    coord_t player2;
+    player2.x = 0;
+    player2.y = 3;
+    player2.z = 3;
+    coord_t ball;
+    ball.x = 6;
+    ball.y = 6;
+    ball.z = 6;
+    uint32_t ballTimer = millis();
+    
+    
+    while (true) {
+        char c = ']';
+        if (keyboard.available()){
+            
+            c=keyboard.read();
+            if (c == PS2_ESC) {
+                break;
+            }
+        }
+        if (((uint8_t) (ballx + 0.5) != ball.x || (uint8_t) (bally + 0.5) != ball.y || (uint8_t) (ballz + 0.5) != ball.z) || !start) {
+            
+        }
+        
+        
+        if (!start) {
+            start = true;
+        }
+        // Move the paddles location
+        switch (c) {
+                //ifs use underflow
+            case 's': if (!(player2.y + PADDLE_LENGTH == 11)) { player2.y++; eradicate(P2_COLOR); } break;
+            case 'z': if (!(player2.z == 0)) { player2.z--; eradicate(P2_COLOR); } break;
+            case 'q': if (!(player2.z + PADDLE_LENGTH == 11)) { player2.z++; eradicate(P2_COLOR); } break;
+            case 'a': if (!(player2.y == 0)) { player2.y--; eradicate(P2_COLOR); } break;
+                
+            case '5': if (!(player1.y + PADDLE_LENGTH == 11)) { player1.y++; eradicate(P1_COLOR); } break;
+            case '3': if (!(player1.z == 0)) { player1.z--; eradicate(P1_COLOR); } break;
+            case '9': if (!(player1.z + PADDLE_LENGTH == 11)) { player1.z++; eradicate(P1_COLOR); } break;
+            case '6': if (!(player1.y == 0)) { player1.y--; eradicate(P1_COLOR); } break;
+            default:
+                break;
+        }
+        
+        //        for (uint8_t i = 0; i < rise.magnitude; i++) {
+        //            for (uint8_t firstDeminsion = 0; firstDeminsion < 12; firstDeminsion++) {
+        //                for (uint8_t secondDeminsion = 0; secondDeminsion < 12; secondDeminsion++) {
+        //                    switch (rise.direction) {
+        //                        case LEFT: if (ball.x != 0) { ball.x--; } break;
+        //
+        //                        default:
+        //                            break;
+        //                    }
+        //                }
+        //            }
+        //        }
+        
+        //  MOVE THE FLOATED REFERENCE POINT FOR THA BALL
+        if (millis() - ballTimer > BALL_REFRESH) {
+            switch (slope.ofRise) {
+                case FORWARD: ballz += (slope.rise); break;
+                case UP: bally += slope.rise; break;
+                case BACKWARD: ballz -= slope.rise; break;
+                case RIGHT: ballx += slope.rise; break;
+                case DOWN: bally -= slope.rise; break;
+                case LEFT: ballx -= slope.rise; break;
+            }
+            switch (slope.ofRun) {
+                case FORWARD: ballz += (slope.run); break;
+                case UP: bally += slope.run; break;
+                case BACKWARD: ballz -= slope.run; break;
+                case RIGHT: ballx += slope.run; break;
+                case DOWN: bally -= slope.run; break;
+                case LEFT: ballx -= slope.run; break;
+            }
+            switch (slope.ofZRun) {
+                case FORWARD: ballz += (slope.zRun); break;
+                case UP: bally += slope.zRun; break;
+                case BACKWARD: ballz -= slope.zRun; break;
+                case RIGHT: ballx += slope.zRun; break;
+                case DOWN: bally -= slope.zRun; break;
+                case LEFT: ballx -= slope.zRun; break;
+            }
+            ballTimer += BALL_REFRESH;
+            if (ball.x != (uint8_t) (ballx + 0.5) || ball.y != (uint8_t) (bally + 0.5) || ball.z != (uint8_t) (ballz + 0.5)) {
+                eradicate(BALL_COLOR);
+            }
+            ball.x = (uint8_t) (ballx + 0.5);
+            ball.y = (uint8_t) (bally + 0.5);
+            ball.z = (uint8_t) (ballz + 0.5);
+            if (LEDArray(ball.x, ball.y, ball.z) != 0 || ( ball.x != 0 || ball.x != 11)) {
+                
+                if (ball.x > 50) {
+                    ball.x = 0;
+                } else if (ball.x > 11) {
+                    ball.x = 11;
+                }
+                if (ball.y > 50) {
+                    ball.y = 0;
+                } else if (ball.y > 11) {
+                    ball.y = 11;
+                }
+                if (ball.z > 50) {
+                    ball.z = 0;
+                } else if (ball.z > 11) {
+                    ball.z = 11;
+                }
+                
+                if (ball.x == 0) {
+                    slope.ofRun = RIGHT;
+                } else if (ball.x == 11) {
+                    slope.ofRun = LEFT;
+                }
+                if (ball.y == 0) {
+                    slope.ofRise = UP;
+                } else if (ball.y == 11) {
+                    slope.ofRise = DOWN;
+                }
+                if (ball.z == 0) {
+                    slope.ofZRun = FORWARD;
+                } else if (ball.z == 11) {
+                    slope.ofZRun = BACKWARD;
+                }
+                
+                
+                for (uint8_t i = 3; i > 0; i--) {
+                    protected_set_led_pk(ball.x - 2 + i, ball.y, ball.z, BALL_COLOR);
+                    protected_set_led_pk(ball.x, ball.y, ball.z - 2 + i, BALL_COLOR);
+                    protected_set_led_pk(ball.x, ball.y - 2 + i, ball.z, BALL_COLOR);
+                }
+            }
+        }
+        
+        
+        
+        //draw paddles from location
+        DrawFigure(player1.x, player1.y + PADDLE_LENGTH / 2, player1.z + PADDLE_LENGTH / 2, player1.x, player1.y + PADDLE_LENGTH - PADDLE_LENGTH / 2, player1.z + PADDLE_LENGTH - PADDLE_LENGTH / 2, P1_COLOR);
+        DrawFigure(player2.x, player2.y + PADDLE_LENGTH / 2, player2.z + PADDLE_LENGTH / 2, player2.x, player2.y + PADDLE_LENGTH - PADDLE_LENGTH / 2, player2.z + PADDLE_LENGTH - PADDLE_LENGTH / 2, P2_COLOR);
+        DrawFigure(player1.x, player1.y, player1.z, player1.x, player1.y + PADDLE_LENGTH, player1.z + PADDLE_LENGTH, P1_COLOR);
+        DrawFigure(player2.x, player2.y, player2.z, player2.x, player2.y + PADDLE_LENGTH, player2.z + PADDLE_LENGTH, P2_COLOR);
+    }
+    clearCube(); //exit game
+#undef P2_COLOR
+#undef P1_COLOR
+#undef PADDLE_LENGTH
+#undef BALL_COLOR
+#undef BALL_REFRESH
 }
 
 /***************************************************************************
