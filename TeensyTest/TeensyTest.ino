@@ -108,6 +108,8 @@ void (*appFunctions[3][5])() {{lightCube, snow, randomColors, swirl, test}, {som
 PS2Keyboard keyboard;
 volatile uint8_t     gs_buf[NUM_BYTES];  //Buffer written to TLCs over SPI (12 bit color values)
 volatile uint16_t    px_buf[NUM_LEDS];   //Pixel buffer storing each LED color as a 16 bit value ( RRRRRGGGGGGBBBBB )
+extern uint8_t font[][15];
+
 
 uint8_t phase = 0; //strictly for the color shifting of the snake game
 
@@ -118,7 +120,7 @@ uint8_t phase = 0; //strictly for the color shifting of the snake game
 //uint16_t blue = 0x000F;
 uint32_t white = 0xFFFF;
 uint32_t timer0;
-
+uint8_t charCount = 0;
 
 
 int count = 0;
@@ -261,10 +263,10 @@ uint8_t shifter(uint8_t k, directions more, mainStates state) {
         amount = ANIMATIONAMOUNT;
     }
     else if (state == INTERACTIVEANIMATIONS) {
-        
+
         amount = INTERACTIVEANIMATIONSAMOUNT;
     }
-    
+
     if (more == RIGHT) {
         if (k == amount - 1) {
             k = 0;
@@ -358,8 +360,8 @@ void setPackedPackedLED(uint16_t coord, uint16_t c) {
 
 //this function switches which orientation you may look at the cube, the  coordinates go as follows, the face you look at for each direction, the reletive 'z' coordinate is the third one, the reletive 'x' is either the true z or x direction, and the second coordinate is always the reletive 'y'
 uint16_t directionalCubeArray(uint8_t firstCord, uint8_t secondCord, uint8_t thirdCord, directions direction, boolean setLED = false, uint16_t color = 0){
-    
-    
+
+
     if (setLED){
         switch (direction) { //you can set leds
             case UP:
@@ -429,9 +431,9 @@ void rotate(uint16_t t) {
     uint32_t R3Time = millis();
     uint32_t R4Time = millis();
     uint32_t R5Time = millis();
-    
+
     while (millis() - timer < t) {
-        
+
     }
 
 }
@@ -568,131 +570,96 @@ void angledMove(uint8_t rise, uint8_t run, directions direction, uint16_t color)
  *   Sub Seperator
  *
  ***************************************************************************/
+ /***************************************************************************
+  *
+  *   Sub Seperator
+  *
+  ***************************************************************************/
 
-void drawNumber(int number, int x1, int y1, int z1, directions viewpoint, uint16_t color) {
-    if (number == 0) {
-        directionalCubeArray(x1, y1, z1, viewpoint, true, color);
-        directionalCubeArray(x1+1, y1, z1, viewpoint, true, color);
-        directionalCubeArray(x1+2, y1, z1, viewpoint, true, color);
-        directionalCubeArray(x1+2, y1+1, z1, viewpoint, true, color);
-        directionalCubeArray(x1+2, y1+2, z1, viewpoint, true, color);
-        directionalCubeArray(x1+2, y1+3, z1, viewpoint, true, color);
-        directionalCubeArray(x1+2, y1+4, z1, viewpoint, true, color);
-        directionalCubeArray(x1+1, y1+4, z1, viewpoint, true, color);
-        directionalCubeArray(x1, y1+4, z1, viewpoint, true, color);
-        directionalCubeArray(x1, y1+3, z1, viewpoint, true, color);
-        directionalCubeArray(x1, y1+2, z1, viewpoint, true, color);
-        directionalCubeArray(x1, y1+1, z1, viewpoint, true, color);
+uint8_t getFontIndex(char c) {
+  switch (c) {
+    case 'A': return 0;
+    case 'B': return 1;
+    case 'C': return 2;
+    case 'D': return 3;
+    case 'E': return 4;
+    case 'F': return 5;
+    case 'G': return 6;
+    case 'H': return 7;
+    case 'I': return 8;
+    case 'J': return 9;
+    case 'K': return 10;
+    case 'L': return 11;
+    case 'M': return 12;
+    case 'N': return 13;
+    case 'O': return 14;
+    case 'P': return 15;
+    case 'Q': return 16;
+    case 'R': return 17;
+    case 'S': return 18;
+    case 'T': return 19;
+    case 'U': return 20;
+    case 'V': return 21;
+    case 'W': return 22;
+    case 'X': return 23;
+    case 'Y': return 24;
+    case 'Z': return 25;
+    case 1: return 26;
+    case 2: return 27;
+    case 3: return 28;
+    case 4: return 29;
+    case 5: return 30;
+    case 6: return 31;
+    case 7: return 32;
+    case 8: return 33;
+    case 9: return 34;
+    case 0: return 35;
+    case PS2_BACKSPACE: return 36;
+  }
+}
+
+void drawChar(char c, int x1, int y1, int z1, directions viewpoint, uint16_t color) {
+    for (int i = 1; i < 4; i++) {
+      for (int j = 0; j < 5; j++) {
+        if (font[getFontIndex(c)][j*i]) {
+          directionalCubeArray(x1 + i - 1, y1 + j*i, z1, viewpoint, true, color);
+        }
+      }
     }
-    else if (number == 1) {
-        directionalCubeArray(x1, y1, z1, viewpoint, true, color);
-        directionalCubeArray(x1+1, y1, z1, viewpoint, true, color);
-        directionalCubeArray(x1+2, y1, z1, viewpoint, true, color);
-        directionalCubeArray(x1+1, y1+1, z1, viewpoint, true, color);
-        directionalCubeArray(x1+1, y1+2, z1, viewpoint, true, color);
-        directionalCubeArray(x1+1, y1+3, z1, viewpoint, true, color);
-        directionalCubeArray(x1+1, y1+4, z1, viewpoint, true, color);
-        directionalCubeArray(x1, y1+3, z1, viewpoint, true, color);
-    }
-    else if (number == 2) {
-        directionalCubeArray(x1, y1, z1, viewpoint, true, color);
-        directionalCubeArray(x1+1, y1, z1, viewpoint, true, color);
-        directionalCubeArray(x1+2, y1, z1, viewpoint, true, color);
-        directionalCubeArray(x1, y1+1, z1, viewpoint, true, color);
-        directionalCubeArray(x1, y1+2, z1, viewpoint, true, color);
-        directionalCubeArray(x1, y1+4, z1, viewpoint, true, color);
-        directionalCubeArray(x1+1, y1+4, z1, viewpoint, true, color);
-        directionalCubeArray(x1+2, y1+4, z1, viewpoint, true, color);
-        directionalCubeArray(x1+2, y1+3, z1, viewpoint, true, color);
-        directionalCubeArray(x1+2, y1+2, z1, viewpoint, true, color);
-        directionalCubeArray(x1+1, y1+2, z1, viewpoint, true, color);
-    }
-    else if (number == 3) {
-        directionalCubeArray(x1, y1+4, z1, viewpoint, true, color);
-        directionalCubeArray(x1+1, y1+2, z1, viewpoint, true, color);
-        directionalCubeArray(x1+2, y1, z1, viewpoint, true, color);
-        directionalCubeArray(x1+2, y1+1, z1, viewpoint, true, color);
-        directionalCubeArray(x1+2, y1+2, z1, viewpoint, true, color);
-        directionalCubeArray(x1+2, y1+3, z1, viewpoint, true, color);
-        directionalCubeArray(x1+2, y1+4, z1, viewpoint, true, color);
-        directionalCubeArray(x1+1, y1+4, z1, viewpoint, true, color);
-        directionalCubeArray(x1, y1, z1, viewpoint, true, color);
-        directionalCubeArray(x1+1, y1, z1, viewpoint, true, color);
-    }
-    else if (number == 4) {
-        directionalCubeArray(x1, y1+2, z1, viewpoint, true, color);
-        directionalCubeArray(x1, y1+3, z1, viewpoint, true, color);
-        directionalCubeArray(x1, y1+4, z1, viewpoint, true, color);
-        directionalCubeArray(x1+1, y1+2, z1, viewpoint, true, color);
-        directionalCubeArray(x1+2, y1, z1, viewpoint, true, color);
-        directionalCubeArray(x1+2, y1+1, z1, viewpoint, true, color);
-        directionalCubeArray(x1+2, y1+2, z1, viewpoint, true, color);
-        directionalCubeArray(x1+2, y1+3, z1, viewpoint, true, color);
-        directionalCubeArray(x1+2, y1+4, z1, viewpoint, true, color);
-    }
-    else if (number == 5) {
-        directionalCubeArray(x1, y1+2, z1, viewpoint, true, color);
-        directionalCubeArray(x1, y1+3, z1, viewpoint, true, color);
-        directionalCubeArray(x1, y1+4, z1, viewpoint, true, color);
-        directionalCubeArray(x1+1, y1+2, z1, viewpoint, true, color);
-        directionalCubeArray(x1+2, y1, z1, viewpoint, true, color);
-        directionalCubeArray(x1+2, y1+1, z1, viewpoint, true, color);
-        directionalCubeArray(x1+2, y1+2, z1, viewpoint, true, color);
-        directionalCubeArray(x1+2, y1+4, z1, viewpoint, true, color);
-        directionalCubeArray(x1+1, y1+4, z1, viewpoint, true, color);
-        directionalCubeArray(x1, y1, z1, viewpoint, true, color);
-        directionalCubeArray(x1+1, y1, z1, viewpoint, true, color);
-    }
-    else if (number == 6) {
-        directionalCubeArray(x1, y1+2, z1, viewpoint, true, color);
-        directionalCubeArray(x1, y1+3, z1, viewpoint, true, color);
-        directionalCubeArray(x1, y1+4, z1, viewpoint, true, color);
-        directionalCubeArray(x1+1, y1+2, z1, viewpoint, true, color);
-        directionalCubeArray(x1+2, y1, z1, viewpoint, true, color);
-        directionalCubeArray(x1+2, y1+1, z1, viewpoint, true, color);
-        directionalCubeArray(x1+2, y1+2, z1, viewpoint, true, color);
-        directionalCubeArray(x1+2, y1+4, z1, viewpoint, true, color);
-        directionalCubeArray(x1+1, y1+4, z1, viewpoint, true, color);
-        directionalCubeArray(x1, y1, z1, viewpoint, true, color);
-        directionalCubeArray(x1+1, y1, z1, viewpoint, true, color);
-        directionalCubeArray(x1, y1+1, z1, viewpoint, true, color);
-    }
-    else if (number == 7) {
-        directionalCubeArray(x1, y1+4, z1, viewpoint, true, color);
-        directionalCubeArray(x1+2, y1, z1, viewpoint, true, color);
-        directionalCubeArray(x1+2, y1+1, z1, viewpoint, true, color);
-        directionalCubeArray(x1+2, y1+2, z1, viewpoint, true, color);
-        directionalCubeArray(x1+2, y1+3, z1, viewpoint, true, color);
-        directionalCubeArray(x1+2, y1+4, z1, viewpoint, true, color);
-        directionalCubeArray(x1+1, y1+4, z1, viewpoint, true, color);
-    }
-    else if (number == 8) {
-        directionalCubeArray(x1, y1+2, z1, viewpoint, true, color);
-        directionalCubeArray(x1, y1+3, z1, viewpoint, true, color);
-        directionalCubeArray(x1, y1+4, z1, viewpoint, true, color);
-        directionalCubeArray(x1+1, y1+2, z1, viewpoint, true, color);
-        directionalCubeArray(x1+2, y1, z1, viewpoint, true, color);
-        directionalCubeArray(x1+2, y1+1, z1, viewpoint, true, color);
-        directionalCubeArray(x1+2, y1+2, z1, viewpoint, true, color);
-        directionalCubeArray(x1+2, y1+3, z1, viewpoint, true, color);
-        directionalCubeArray(x1+2, y1+4, z1, viewpoint, true, color);
-        directionalCubeArray(x1+1, y1+4, z1, viewpoint, true, color);
-        directionalCubeArray(x1, y1, z1, viewpoint, true, color);
-        directionalCubeArray(x1+1, y1, z1, viewpoint, true, color);
-        directionalCubeArray(x1, y1+1, z1, viewpoint, true, color);
-    }
-    else if (number == 9) {
-        directionalCubeArray(x1, y1+2, z1, viewpoint, true, color);
-        directionalCubeArray(x1, y1+3, z1, viewpoint, true, color);
-        directionalCubeArray(x1, y1+4, z1, viewpoint, true, color);
-        directionalCubeArray(x1+1, y1+2, z1, viewpoint, true, color);
-        directionalCubeArray(x1+2, y1, z1, viewpoint, true, color);
-        directionalCubeArray(x1+2, y1+1, z1, viewpoint, true, color);
-        directionalCubeArray(x1+2, y1+2, z1, viewpoint, true, color);
-        directionalCubeArray(x1+2, y1+3, z1, viewpoint, true, color);
-        directionalCubeArray(x1+2, y1+4, z1, viewpoint, true, color);
-        directionalCubeArray(x1+1, y1+4, z1, viewpoint, true, color);
-    }
+}
+
+/***************************************************************************
+ *
+ *   Sub Seperator
+ *
+ ***************************************************************************/
+
+void typeChars(char c){
+  directions direction = FORWARD;
+  uint8_t xPosition = charCount % 4;
+  uint8_t yPosition = 7;
+  uint16_t color = 0xFFFF;
+  if (charCount % 2) {
+    color = 0x00FF;
+  }
+  if (charCount > 20) {
+    yPosition = 0;
+  }
+  if ((charCount <= 8 && 4 < charCount) || charCount > 20) {
+    direction = LEFT;
+  } else if (charCount <= 12) {
+    direction = BACKWARD;
+  }  else if (charCount <= 16) {
+    direction = RIGHT;
+  } else if (charCount <= 24) {
+    direction = FORWARD;
+  }
+  if (c == PS2_BACKSPACE) {
+    charCount--;
+  } else {
+    charCount++;
+  }
+  drawChar(c, xPosition, yPosition, 0, direction, color);
 }
 
 /***************************************************************************
@@ -823,9 +790,9 @@ void mainSwitch(mainStates state) {
     uint8_t stateSwitch = 0;
     uint32_t backgroundTimer = millis();
     while(true) {
-        
+
         if (millis() - backgroundTimer > 200) {
-            
+
            // setRandomLED(3, DOWN, 0xFFFF);
             for (uint8_t j = 0; j < 12; j++) {
             for (uint8_t i = 0; i < 12; i++) {
@@ -834,9 +801,9 @@ void mainSwitch(mainStates state) {
             backgroundTimer += 200;
         }
         }
-        
+
         char c;
-        
+
         if (keyboard.available()) {
             c = keyboard.read();
             //i = c - '0';
@@ -848,7 +815,7 @@ void mainSwitch(mainStates state) {
                 }
             }
         }
-        
+
     switch (state) {
             //int y;
         case TOP:
@@ -871,11 +838,11 @@ void mainSwitch(mainStates state) {
                 break;
             }
             //y=0;
-            drawNumber(stateSwitch + 1, 5, 5, 0, FORWARD, 0xF0F0);
-            drawNumber(stateSwitch + 1, 5, 5, 1, FORWARD, 0xF0F0);
+            drawChar(stateSwitch + 1, 5, 5, 0, FORWARD, 0xF0F0);
+            drawChar(stateSwitch + 1, 5, 5, 1, FORWARD, 0xF0F0);
 
             break;
-            
+
         case ANIMATIONS:
 
             if (c == PS2_ESC) {
@@ -884,7 +851,7 @@ void mainSwitch(mainStates state) {
                 break;
 
             }
-            
+
             else if (c == PS2_LEFTARROW) {
                 i = shifter(i, LEFT, ANIMATIONS);
                 clearMost(6, BACKWARD);
@@ -895,15 +862,15 @@ void mainSwitch(mainStates state) {
                 clearMost(6, BACKWARD);
 
             }
-            
+
             else if (c == PS2_ENTER){
                 appFunctions[0][i]();
             }
-            drawNumber(i + 1, 5, 5, 0, FORWARD, 0xFFFF);
-            drawNumber(i + 1, 5, 5, 1, FORWARD, 0xFFFF);
+            drawChar(i + 1, 5, 5, 0, FORWARD, 0xFFFF);
+            drawChar(i + 1, 5, 5, 1, FORWARD, 0xFFFF);
 
             break;
-            
+
         case GAMES:
 
             if (c == PS2_ESC) {
@@ -911,7 +878,7 @@ void mainSwitch(mainStates state) {
                 clearMost(6, BACKWARD);
                 break;
             }
-            
+
             else if (c == PS2_LEFTARROW) {
                 i = shifter(i, LEFT, GAMES);
                 clearMost(6, BACKWARD);
@@ -921,42 +888,42 @@ void mainSwitch(mainStates state) {
                 clearMost(6, BACKWARD);
 
             }
-            
+
             else if (c == PS2_ENTER){
             appFunctions[2][i]();
             }
-            drawNumber(i + 1, 5, 5, 0, FORWARD, 0xFFFF);
-            drawNumber(i + 1, 5, 5, 1, FORWARD, 0xFFFF);
+            drawChar(i + 1, 5, 5, 0, FORWARD, 0xFFFF);
+            drawChar(i + 1, 5, 5, 1, FORWARD, 0xFFFF);
 
             break;
-        
+
             case INTERACTIVEANIMATIONS:
-            
+
             if (c == PS2_ESC) {
                 state = TOP;
                 clearMost(6, BACKWARD);
                 break;
             }
-            
+
             else if (c == PS2_LEFTARROW) {
                 i = shifter(i, LEFT, INTERACTIVEANIMATIONS);
                 clearMost(6, BACKWARD);
-                
+
             }
             else if (c == PS2_RIGHTARROW) {
                 i = shifter(i, RIGHT, INTERACTIVEANIMATIONS);
                 clearMost(6, BACKWARD);
-                
+
             }
-            
+
             else if (c == PS2_ENTER){
                 appFunctions[1][i]();
             }
-            drawNumber(i + 1, 5, 5, 0, FORWARD, 0xFFFF);
-            drawNumber(i + 1, 5, 5, 1, FORWARD, 0xFFFF);
-            
+            drawChar(i + 1, 5, 5, 0, FORWARD, 0xFFFF);
+            drawChar(i + 1, 5, 5, 1, FORWARD, 0xFFFF);
+
             break;
-            
+
     }
         c = ']';
 
@@ -980,7 +947,6 @@ void loop()
 {
 
     mainSwitch(TOP);
-  //this is curently just a simple 'dodge' game
 
 } //end loop
 
@@ -997,7 +963,7 @@ void loop()
 
 
 void dodgeGame() {
-    
+
     uint32_t timer0 = millis();
     uint32_t dificultyTimer = millis();
     uint32_t time1 = millis();
@@ -1006,17 +972,17 @@ void dodgeGame() {
     boolean start = false;
     clearCube();
     while (true){
-   
+
         if (millis() - dificultyTimer > 5000 && start) {
-            
+
             ledCount++;
             Serial.print(ledCount);
             dificultyTimer += 5000;
-            
+
         }
         uint16_t delayTime = 150;
-    
-    
+
+
     if (key != 7){
         set_led_pk(5, 5, 1, 0xF00);
         set_led_pk(6, 5, 1, 0xF00);
@@ -1026,12 +992,12 @@ void dodgeGame() {
         set_led_pk(6, 5, 2, 0xF00);
         set_led_pk(5, 6, 2, 0xF00);
         set_led_pk(6, 6, 2, 0xF00);
-        
-        
+
+
     }
-    
+
     char c;
-    
+
     if (keyboard.available()){
         start = true;
         c=keyboard.read();
@@ -1040,7 +1006,7 @@ void dodgeGame() {
             break;
         }
     }
-    
+
     if (c == PS2_UPARROW){
         for (int i = 0; i < 12; i++){
             moveRow(i, 1, UP, 0xF00, true);
@@ -1064,25 +1030,25 @@ void dodgeGame() {
     }
     else if (c == PS2_RIGHTARROW){
         for (int i = 0; i < 12; i++){
-            
+
             moveRow(10, i, RIGHT, 0xF00, true);
             moveRow(9, i, RIGHT, 0xF00, true);
             c = '[';
         }
     }
-    
+
         if (start) {
     if (millis() - timer0 > delayTime){
         Serial.print(ledCount);
         setRandomLED(ledCount, BACKWARD, 0xFFF);
 
-        
+
         for (int i = 0; i < 12; i++){
             for (int j = 0; j < 12; j++){
-                
+
                 moveRow(i, j, BACKWARD, 0xFFF);
             }
-            
+
         }
         timer0 += delayTime;
     }
@@ -1100,6 +1066,7 @@ void dodgeGame() {
  *   Sub Seperator t
  *
  ***************************************************************************/
+
 void dropMatch() {
     for (int p = 0; p < 3; p++) {
 
@@ -1140,7 +1107,7 @@ uint16_t colorShifter(uint16_t currentColor) {
 
 void MoveLED(uint8_t x, uint8_t y, uint8_t z, uint16_t currentColor, boolean gainLength) {
     currentColor = colorShifter(currentColor);
-    
+
 //    Serial.println(0xFFFF);
 //    Serial.println(colorShifter(0xFFFF));
 //    Serial.println(LEDArray(x, y, z));
@@ -1151,27 +1118,27 @@ void MoveLED(uint8_t x, uint8_t y, uint8_t z, uint16_t currentColor, boolean gai
     }
     else if (LEDArray(x - 1, y, z) == currentColor) {
         set_led_pk(x, y, z, currentColor);
-        
+
         MoveLED(x - 1, y, z, currentColor, gainLength);
-        
+
     }
     else if (LEDArray(x, y+1, z) == currentColor) {
         set_led_pk(x, y, z, currentColor);
-        
+
         MoveLED(x, y + 1, z, currentColor, gainLength);
-        
+
     }
     else if (LEDArray(x, y-1, z) == currentColor) {
         set_led_pk(x, y, z, currentColor);
-        
+
         MoveLED(x, y-1, z, currentColor, gainLength);
-        
+
     }
     else if (LEDArray(x, y, z+1) == currentColor) {
         set_led_pk(x, y, z, currentColor);
-        
+
         MoveLED(x, y, z+1, currentColor, gainLength);
-        
+
     }
     else if (LEDArray(x, y, z-1) == currentColor) {
         set_led_pk(x, y, z, currentColor);
@@ -1188,7 +1155,7 @@ void MoveLED(uint8_t x, uint8_t y, uint8_t z, uint16_t currentColor, boolean gai
   else {
       set_led_pk(x, y, z, 0);
   }
-    
+
 }
 
 
@@ -1215,19 +1182,20 @@ void snakeGame() {
     boolean addLength = false;
     coord_t food[NUM_FOOD];
     boolean endGame = false;
-    
+
    // coord_t snake[ MAX_SNAKE_LEN ];
    // coord_t * sk_head = snake;
    // coord_t * sk_tail = snake;
     while (true) {
         char c = ']';
-        
+
         if (keyboard.available()){
             c=keyboard.read();
             if (c == PS2_ESC) {
                 break;
             }
-            
+
+            // so that the snake cannot eat itself
             if (c == PS2_LEFTARROW && direction == RIGHT) {
                 c = ']';
             } else if (c == PS2_RIGHTARROW && direction == LEFT) {
@@ -1243,7 +1211,6 @@ void snakeGame() {
             }
         }
 
-    
         if (!start) {
             clearCube();
             for (int i = 0; i < 4; i++) {
@@ -1262,6 +1229,7 @@ void snakeGame() {
             }
             start = true;
         }
+
         if (millis() - foodTimer > 900) {
             if (toggle) {
                 for (int i = 0; i < NUM_FOOD; i++ ) {
@@ -1276,7 +1244,7 @@ void snakeGame() {
             }
             foodTimer += 900;
         }
-        
+
         switch (c) {
             case PS2_LEFTARROW: direction = LEFT; break;
             case PS2_RIGHTARROW: direction = RIGHT; break;
@@ -1285,25 +1253,25 @@ void snakeGame() {
             case 'r': direction = UP; break;
             case '1': direction = UP; break;
             case PS2_DOWNARROW: direction = BACKWARD; break;
-            case PS2_UPARROW: direction = FORWARD;break;
+            case PS2_UPARROW: direction = FORWARD; break;
             default: break;
         }
 
-        
+
         x2 = x;
         y2 = y;
         z2 = z;
-        
+
 //        if (addLength && eatenFood != 100) {
 //            food[eatenFood] = {
 //
 //
 //            }
 //        }
-        
+
 
         if (millis() - moveTimer > speed && !endGame) {
-            if (length >= 7 && speed > 200) {
+            if (length >= 7 && speed > 300) {
                 speed -= 90;
                 length = 0;
             }
@@ -1327,11 +1295,11 @@ void snakeGame() {
             case RIGHT:
                 x++;
                 break;
-                
+
             default:
                 break;
                     }
-                
+
                 for (int i = 0; i < NUM_FOOD; i++) {
                     if (food[i].x == x && food[i].y == y && food[i].z == z) {
                         while (true) {
@@ -1344,16 +1312,16 @@ void snakeGame() {
                                 break;
                             }
                         }
-                        
+
                     }
-                    
+
                 }
                 if (LEDArray(x, y, z) != 0 && addLength != true || (x - 1 >= 11 || y - 1 >= 11 || z - 1 >= 11)) {
                     endGame = true;
                     pourGasoline();
                 } else {
                 set_led_pk(x, y, z, 0xFFFF);
-                
+
         MoveLED(x2, y2, z2, 0xFFFF, addLength);
                 addLength = false;
             moveTimer += speed;
@@ -1361,7 +1329,7 @@ void snakeGame() {
             }
 
         }
-    
+
     }
 #undef NUM_FOOD
 }
@@ -1378,32 +1346,32 @@ void lightCube() {
     uint8_t i = 0;
     while (true) {
         char c;
-        
+
         if (keyboard.available()){
-            
+
             c=keyboard.read();
             if (c == PS2_ESC) {
                 break;
-                
+
             }
         }
-        
-        
+
+
         if (lightUp){
             if (millis() - timer > 200) {
-            
+
             for (int l = 0; l < 12; l++){
                 for (int j = 0; j < 12; j++){
                     for (int k = 0; k < 12; k++){
                         set_led(l, j, k, i * (255 / 10), i * (0 / 10), i * (255 / 10));
-                        
+
                     }
                 }
             }
-        
+
             if (i == 11){
                 lightUp = false;
-                
+
             }
             else {
             i++;
@@ -1421,7 +1389,7 @@ void lightCube() {
                     }
                 }
             }
-        
+
             if (i == 0){
                 lightUp = true;
             }else {
@@ -1439,7 +1407,87 @@ void lightCube() {
  *
  ***************************************************************************/
 
+void drawCrossHelper(coord_t p) {
+  for (int i = 0; i < 12; i++) {
+    if (!LEDArray(i, p.y, p.z)) {
+      set_led_pk(i, p.y, p.z, 0x3333);
+    }
+  }
+  for (int i = 0; i < 12; i++) {
+    if (!LEDArray(p.x, p.y, i)) {
+      set_led_pk(p.x, p.y, i, 0x3333);
+    }
+  }
+  for (int i = 0; i < 12; i++) {
+    if (!LEDArray(p.x, i, p.z)) {
+      set_led_pk(p.x, i, p.z, 0x3333);
+    }
+  }
+}
 
+void drawObject(coord_t p) {
+    for(int i = p.x - 1; i < p.x + 1; i++) {
+      protected_set_led_pk(i, i, p.z);
+      protected_set_led_pk(12 - i, 12 - i, p.z);
+        }
+
+      for(int i = p.z - 1; i < p.z + 1; i++) {
+        protected_set_led_pk(p.x, i, i);
+        protected_set_led_pk(p.x, 12 - i, 12 - i);
+    }
+}
+
+void objectSomethingGame() {
+  #define NUM_ATTACKERS 5
+  coord_t crossPoint;
+  coord_t attackers[NUM_ATTACKERS];
+  crossPoint.x = 5;
+  crossPoint.y = 5;
+  crossPoint.z = 5;
+  uint32_t timer = millis();
+  while (true) {
+     char c;
+     if (keyboard.available()){
+
+       for (int i = 0; i < NUM_ATTACKERS; i++) {
+            attackers[i].x = 13;
+            attackers[i].y = 13;
+            attackers[i].z = 13;
+          }
+         c=keyboard.read();
+         if (c == PS2_ESC) {
+             break;
+         }
+     }
+
+     if (millis() - timer > 2000) {}
+
+
+       timer = millis();
+     }
+
+     switch (c) {
+         case PS2_LEFTARROW: crossPoint.x--; break;
+         case PS2_RIGHTARROW: crossPoint.x++; break;
+         case '0': crossPoint.y--; break;
+         case 'w': crossPoint.y++; break;
+         case 's': crossPoint.y--; break;
+         case '1': crossPoint.y++; break;
+         case PS2_DOWNARROW: crossPoint.z--; break;
+         case PS2_UPARROW: crossPoint.z++; break;
+         default: break;
+     }
+
+     // draw the cross hairs on the cube at a regular interval
+     if (millis() - timer > 150) {
+       drawCrossHelper(crossPoint);
+       timer = millis();
+     }
+
+     }
+  clearCube();
+  #undef NUM_ATTACKERS
+}
 
 /***************************************************************************
  *
@@ -1452,9 +1500,9 @@ void someThing() {
     uint32_t timer = millis();
     while (true) {
         char c;
-        
+
         if (keyboard.available()){
-            
+
             c=keyboard.read();
             if (c == PS2_ESC) {
                 break;
@@ -1464,7 +1512,7 @@ void someThing() {
             for (int h = 0; h < 12; h++) {
             for (int i = 0; i < 12; i++){
                 for (int j = 0; j < 12; j++){
-                    
+
                     moveRow(i, j, DOWN);
                 }
             }
@@ -1522,29 +1570,29 @@ void someThing() {
         else if (c == PS2_DOWNARROW){
             for (int i = 0; i < 12; i++){
                 for (int j = 0; j < 12; j++){
-                    
+
                     moveRow(i, j, BACKWARD, 1, true);
                     c = '[';
                 }
             }
         }
-        
+
 
         else if (c == PS2_LEFTARROW){
             for (int i = 0; i < 12; i++){
                 for (int j = 0; j < 12; j++){
-                    
+
                     moveRow(i, j, LEFT, 1, true);
                     c = '[';
                 }
             }
         }
-        
+
 
         else if (c == PS2_RIGHTARROW){
             for (int i = 0; i < 12; i++){
                 for (int j = 0; j < 12; j++){
-                    
+
                     moveRow(i, j, RIGHT, 1, true);
                     c = '[';
                 }
@@ -1553,7 +1601,7 @@ void someThing() {
         else if (c == 'h'){
             for (int i = 0; i < 12; i++){
                 for (int j = 0; j < 12; j++){
-                    
+
                     moveRow(i, j, DOWN, 1, true);
                     c = '[';
                 }
@@ -1562,7 +1610,7 @@ void someThing() {
         else if (c == 'y'){
             for (int i = 0; i < 12; i++){
                 for (int j = 0; j < 12; j++){
-                    
+
                     moveRow(i, j, UP, 1, true);
                     c = '[';
                 }
@@ -1570,8 +1618,8 @@ void someThing() {
         }
 
 
-            
-            
+
+
     }
 }
 
@@ -1582,21 +1630,20 @@ void someThing() {
  ***************************************************************************/
 
 void lights() {
-    
+
     while (true) {
         char c;
-        
+
         if (keyboard.available()){
-            
+
             c=keyboard.read();
             if (c == PS2_ESC) {
                 break;
             }
         }
-        
+
         setPackedPackedLED(rand() % 4096 & 0x0777, 0xFFFF);
         clearCube();
-        
     }
 }
 
@@ -1606,27 +1653,27 @@ void lights() {
  *
  ***************************************************************************/
 void snow() {
-   
+
     uint32_t timer = millis();
     while (true) {
         char c;
-        
+
         if (keyboard.available()){
-            
+
             c=keyboard.read();
             if (c == PS2_ESC) {
                 break;
             }
         }
-        
+
     if (millis() - timer > 260) {
 
-    
+
     //int color = rand() % 64000;
     int count = 0;
-    
-   
-    
+
+
+
         //delay(260);
     for (int i = 0; i < 12; i++){
         for (int f  = 0; f < 12; f++){
@@ -1638,11 +1685,11 @@ void snow() {
                 if (count == 4){
                     set_led_pk(i, g, f, 0);
                 }
-                
+
             }
         }
     }
-    
+
     for (int i = 0; i < 12; i++){
         for (int j = 0; j < 12; j++){
             if (rand() % 25 != 1){
@@ -1665,13 +1712,12 @@ void snow() {
     clearCube();
 }
 
-
-
 /***************************************************************************
  *
  *   Sub Seperator
  *
  ***************************************************************************/
+
 void drawBall( int x, int y, int z, uint16_t color){
     for(int i=-1; i<=1; i++){
         for(int j=-1; j<=1; j++){
@@ -1725,22 +1771,20 @@ void pong() {
     ball.y = 6;
     ball.z = 6;
     uint32_t ballTimer = millis();
-    
-    
+
     while (true) {
         char c = ']';
         if (keyboard.available()){
-            
+
             c=keyboard.read();
             if (c == PS2_ESC) {
                 break;
             }
         }
         if (((uint8_t) (ballx + 0.5) != ball.x || (uint8_t) (bally + 0.5) != ball.y || (uint8_t) (ballz + 0.5) != ball.z) || !start) {
-            
+
         }
 
-        
         if (!start) {
             start = true;
         }
@@ -1756,23 +1800,10 @@ void pong() {
             case '3': if (!(player1.z == 0)) { player1.z--; eradicate(P1_COLOR); } break;
             case '9': if (!(player1.z + PADDLE_LENGTH == 11)) { player1.z++; eradicate(P1_COLOR); } break;
             case '6': if (!(player1.y == 0)) { player1.y--; eradicate(P1_COLOR); } break;
-            default:
-                break;
         }
-        
-//        for (uint8_t i = 0; i < rise.magnitude; i++) {
-//            for (uint8_t firstDeminsion = 0; firstDeminsion < 12; firstDeminsion++) {
-//                for (uint8_t secondDeminsion = 0; secondDeminsion < 12; secondDeminsion++) {
-//                    switch (rise.direction) {
-//                        case LEFT: if (ball.x != 0) { ball.x--; } break;
-//
-//                        default:
-//                            break;
-//                    }
-//                }
-//            }
-//        }
-        
+
+        }
+
 //  MOVE THE FLOATED REFERENCE POINT FOR THA BALL
         if (millis() - ballTimer > BALL_REFRESH) {
         switch (slope.ofRise) {
@@ -1825,7 +1856,7 @@ void pong() {
                 } else if (ball.z > 11) {
                     ball.z = 11;
                 }
-            
+
             if (ball.x == 0) {
                 slope.ofRise = directions((rand() % 2) * 5);
                 slope.ofZRun = directions((rand() % 2) * 2 + 1);
@@ -1844,8 +1875,8 @@ void pong() {
                 } else if (ball.z == 11) {
                     slope.ofZRun = BACKWARD;
                 }
-            
-            
+
+
             for (uint8_t i = 3; i > 0; i--) {
                 protected_set_led_pk(ball.x - 2 + i, ball.y, ball.z, BALL_COLOR);
                 protected_set_led_pk(ball.x, ball.y, ball.z - 2 + i, BALL_COLOR);
@@ -1853,9 +1884,9 @@ void pong() {
             }
             }
         }
-        
-        
-        
+
+
+
         //draw paddles from location
         DrawFigure(player1.x, player1.y + PADDLE_LENGTH / 2, player1.z + PADDLE_LENGTH / 2, player1.x, player1.y + PADDLE_LENGTH - PADDLE_LENGTH / 2, player1.z + PADDLE_LENGTH - PADDLE_LENGTH / 2, P1_COLOR);
         DrawFigure(player2.x, player2.y + PADDLE_LENGTH / 2, player2.z + PADDLE_LENGTH / 2, player2.x, player2.y + PADDLE_LENGTH - PADDLE_LENGTH / 2, player2.z + PADDLE_LENGTH - PADDLE_LENGTH / 2, P2_COLOR);
@@ -1880,7 +1911,7 @@ void randomColors() {
     while (true) {
         char c;
         if (keyboard.available()){
-            
+
             c=keyboard.read();
             if (c == PS2_ESC) {
                 break;
@@ -1939,22 +1970,22 @@ void ballBounce() {
     ball.y = 6;
     ball.z = 6;
     uint32_t ballTimer = millis();
-    
-    
+
+
     while (true) {
         char c = ']';
         if (keyboard.available()){
-            
+
             c=keyboard.read();
             if (c == PS2_ESC) {
                 break;
             }
         }
         if (((uint8_t) (ballx + 0.5) != ball.x || (uint8_t) (bally + 0.5) != ball.y || (uint8_t) (ballz + 0.5) != ball.z) || !start) {
-            
+
         }
-        
-        
+
+
         if (!start) {
             start = true;
         }
@@ -1965,7 +1996,7 @@ void ballBounce() {
             case 'z': if (!(player2.z == 0)) { player2.z--; eradicate(P2_COLOR); } break;
             case 'q': if (!(player2.z + PADDLE_LENGTH == 11)) { player2.z++; eradicate(P2_COLOR); } break;
             case 'a': if (!(player2.y == 0)) { player2.y--; eradicate(P2_COLOR); } break;
-                
+
             case '5': if (!(player1.y + PADDLE_LENGTH == 11)) { player1.y++; eradicate(P1_COLOR); } break;
             case '3': if (!(player1.z == 0)) { player1.z--; eradicate(P1_COLOR); } break;
             case '9': if (!(player1.z + PADDLE_LENGTH == 11)) { player1.z++; eradicate(P1_COLOR); } break;
@@ -1973,20 +2004,7 @@ void ballBounce() {
             default:
                 break;
         }
-        
-        //        for (uint8_t i = 0; i < rise.magnitude; i++) {
-        //            for (uint8_t firstDeminsion = 0; firstDeminsion < 12; firstDeminsion++) {
-        //                for (uint8_t secondDeminsion = 0; secondDeminsion < 12; secondDeminsion++) {
-        //                    switch (rise.direction) {
-        //                        case LEFT: if (ball.x != 0) { ball.x--; } break;
-        //
-        //                        default:
-        //                            break;
-        //                    }
-        //                }
-        //            }
-        //        }
-        
+
         //  MOVE THE FLOATED REFERENCE POINT FOR THA BALL
         if (millis() - ballTimer > BALL_REFRESH) {
             switch (slope.ofRise) {
@@ -2021,7 +2039,7 @@ void ballBounce() {
             ball.y = (uint8_t) (bally + 0.5);
             ball.z = (uint8_t) (ballz + 0.5);
             if (LEDArray(ball.x, ball.y, ball.z) != 0 || ( ball.x != 0 || ball.x != 11)) {
-                
+
                 if (ball.x > 50) {
                     ball.x = 0;
                 } else if (ball.x > 11) {
@@ -2037,7 +2055,7 @@ void ballBounce() {
                 } else if (ball.z > 11) {
                     ball.z = 11;
                 }
-                
+
                 if (ball.x == 0) {
                     slope.ofRun = RIGHT;
                 } else if (ball.x == 11) {
@@ -2053,8 +2071,8 @@ void ballBounce() {
                 } else if (ball.z == 11) {
                     slope.ofZRun = BACKWARD;
                 }
-                
-                
+
+
                 for (uint8_t i = 3; i > 0; i--) {
                     protected_set_led_pk(ball.x - 2 + i, ball.y, ball.z, BALL_COLOR);
                     protected_set_led_pk(ball.x, ball.y, ball.z - 2 + i, BALL_COLOR);
@@ -2062,9 +2080,7 @@ void ballBounce() {
                 }
             }
         }
-        
-        
-        
+
         //draw paddles from location
         DrawFigure(player1.x, player1.y + PADDLE_LENGTH / 2, player1.z + PADDLE_LENGTH / 2, player1.x, player1.y + PADDLE_LENGTH - PADDLE_LENGTH / 2, player1.z + PADDLE_LENGTH - PADDLE_LENGTH / 2, P1_COLOR);
         DrawFigure(player2.x, player2.y + PADDLE_LENGTH / 2, player2.z + PADDLE_LENGTH / 2, player2.x, player2.y + PADDLE_LENGTH - PADDLE_LENGTH / 2, player2.z + PADDLE_LENGTH - PADDLE_LENGTH / 2, P2_COLOR);
@@ -2115,8 +2131,6 @@ void bounceBall(int iterations){
         else{ z += z_vec; }
 
         drawBall(x,y,z, 0xFFFF);
-        ////delay(200);
-        //test of the github
     }
 }
 
@@ -2146,6 +2160,7 @@ void spiral() {
     }
   }
 }
+
 /***************************************************************************
  *
  *   Sub Seperator
@@ -2173,17 +2188,16 @@ void swirl() {
             directionalCubeArray(i, i, 11, RIGHT, true, 0xF00F);
 
         }
-            
+
             for (int i = 1; i < 11; i++) {
                 directionalCubeArray(i, 11-i, 10, FORWARD, true, 0xF800);
                 directionalCubeArray(i, 11-i, 10, BACKWARD, true,  0x0770);
                 directionalCubeArray(i, 11-i, 10, LEFT, true, 0x00EF);
                 directionalCubeArray(i, 11-i, 10, RIGHT, true, 0xF00F);
             }
-        
+
             start = true;
         }
-        //uint16_t directionalCubeArray(uint8_t firstCord, uint8_t secondCord, uint8_t thirdCord, directions direction, boolean setLED = false, uint16_t color = 0){
 
         if (millis() - timer > 100) {
             for (int k = 0; k < 12; k++) {
@@ -2193,21 +2207,17 @@ void swirl() {
                moveRow(11, k, RIGHT);
 
             }
-            //void moveRow(uint8_t firstCord, uint8_t secondCord,  directions direction,  uint16_t specificColor = 1, boolean collective = false, uint8_t start = 0, uint8_t end = 11, uint16_t color = 1){
             for (int i = 0; i < 4; i++) {
             for (int k = 1; k < 11; k++) {
                 moveRow(1, k, directions(i+1), 1, false, 1, 10);
             }
             }
-            
-        
+
+
             timer = millis();
         }
     }
-        //DO STUFF HERE
-        
-        
-    
+
     clearCube();
 }
 
@@ -2224,7 +2234,7 @@ void test() {
     while (true) {
         char c;
         if (keyboard.available()){
-            
+
             c=keyboard.read();
             if (c == PS2_ESC) {
                  break;
@@ -2233,14 +2243,14 @@ void test() {
         if (millis() - timer > 50) {
             co = colorShifter(co);
             timer += 50;
-            
+
             //Serial.println(((0xFFFF & 0xF800))>>8);
 
         }
         setPackedPackedLED(pk_coord(1, 1, 1), co);
 
         //DO STUFF HERE
-        
+
     }
     clearCube();
 }
@@ -2257,7 +2267,7 @@ void test() {
  while (true) {
     char c;
     if (keyboard.available()){
- 
+
         c=keyboard.read();
         if (c == PS2_ESC) {
             break;
@@ -2265,8 +2275,8 @@ void test() {
     }
 
     //DO STUFF HERE
- 
- 
+
+
     }
  clearCube();
  }
