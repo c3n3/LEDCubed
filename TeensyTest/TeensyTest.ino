@@ -765,16 +765,6 @@ void DrawFigure(int x1, int y1, int z1, int x2, int y2, int z2, uint16_t color) 
         }
     }
 }
-void clearMost(uint8_t howMany, directions backSide) {
-    for (int i = 0; i < 12; i++) {
-        for (int j = 0; j < 12; j++) {
-            for (int k = 11; k > 11-howMany; k--) {
-                directionalCubeArray(i, j, k, backSide, true);
-            }
-        }
-    }
-}
-
 /**************************************************************************
  *                                                                        *
  * ************************************************************************
@@ -821,19 +811,16 @@ void mainSwitch(mainStates state) {
         case TOP:
 
             if (c == PS2_RIGHTARROW) {
-                clearMost(6, BACKWARD);
 
                 stateSwitch = shifter(stateSwitch, RIGHT, TOP);
             }
             if (c == PS2_LEFTARROW) {
-                clearMost(6, BACKWARD);
 
                 stateSwitch = shifter(stateSwitch, LEFT, TOP);
 
             }
             else if (c == PS2_ENTER) {
                 state = mainStates(stateSwitch);
-                clearMost(6, BACKWARD);
                 i=0;
                 break;
             }
@@ -847,19 +834,16 @@ void mainSwitch(mainStates state) {
 
             if (c == PS2_ESC) {
                 state = TOP;
-                clearMost(6, BACKWARD);
                 break;
 
             }
 
             else if (c == PS2_LEFTARROW) {
                 i = shifter(i, LEFT, ANIMATIONS);
-                clearMost(6, BACKWARD);
 
             }
             else if (c == PS2_RIGHTARROW) {
                 i = shifter(i, RIGHT, ANIMATIONS);
-                clearMost(6, BACKWARD);
 
             }
 
@@ -875,18 +859,14 @@ void mainSwitch(mainStates state) {
 
             if (c == PS2_ESC) {
                 state = TOP;
-                clearMost(6, BACKWARD);
                 break;
             }
 
             else if (c == PS2_LEFTARROW) {
                 i = shifter(i, LEFT, GAMES);
-                clearMost(6, BACKWARD);
             }
             else if (c == PS2_RIGHTARROW) {
                 i = shifter(i, RIGHT, GAMES);
-                clearMost(6, BACKWARD);
-
             }
 
             else if (c == PS2_ENTER){
@@ -901,19 +881,14 @@ void mainSwitch(mainStates state) {
 
             if (c == PS2_ESC) {
                 state = TOP;
-                clearMost(6, BACKWARD);
                 break;
             }
 
             else if (c == PS2_LEFTARROW) {
                 i = shifter(i, LEFT, INTERACTIVEANIMATIONS);
-                clearMost(6, BACKWARD);
-
             }
             else if (c == PS2_RIGHTARROW) {
                 i = shifter(i, RIGHT, INTERACTIVEANIMATIONS);
-                clearMost(6, BACKWARD);
-
             }
 
             else if (c == PS2_ENTER){
@@ -1401,93 +1376,6 @@ void lightCube() {
 }
     clearCube();
 }
-/***************************************************************************
- *
- *   Sub Seperator
- *
- ***************************************************************************/
-
-void drawCrossHelper(coord_t p) {
-  for (int i = 0; i < 12; i++) {
-    if (!LEDArray(i, p.y, p.z)) {
-      set_led_pk(i, p.y, p.z, 0x3333);
-    }
-  }
-  for (int i = 0; i < 12; i++) {
-    if (!LEDArray(p.x, p.y, i)) {
-      set_led_pk(p.x, p.y, i, 0x3333);
-    }
-  }
-  for (int i = 0; i < 12; i++) {
-    if (!LEDArray(p.x, i, p.z)) {
-      set_led_pk(p.x, i, p.z, 0x3333);
-    }
-  }
-}
-
-void drawObject(coord_t p) {
-    for(int i = p.x - 1; i < p.x + 1; i++) {
-      protected_set_led_pk(i, i, p.z);
-      protected_set_led_pk(12 - i, 12 - i, p.z);
-        }
-
-      for(int i = p.z - 1; i < p.z + 1; i++) {
-        protected_set_led_pk(p.x, i, i);
-        protected_set_led_pk(p.x, 12 - i, 12 - i);
-    }
-}
-
-void objectSomethingGame() {
-  #define NUM_ATTACKERS 5
-  coord_t crossPoint;
-  coord_t attackers[NUM_ATTACKERS];
-  crossPoint.x = 5;
-  crossPoint.y = 5;
-  crossPoint.z = 5;
-  uint32_t timer = millis();
-  while (true) {
-     char c;
-     if (keyboard.available()){
-
-       for (int i = 0; i < NUM_ATTACKERS; i++) {
-            attackers[i].x = 13;
-            attackers[i].y = 13;
-            attackers[i].z = 13;
-          }
-         c=keyboard.read();
-         if (c == PS2_ESC) {
-             break;
-         }
-     }
-
-     if (millis() - timer > 2000) {}
-
-
-       timer = millis();
-     }
-
-     switch (c) {
-         case PS2_LEFTARROW: crossPoint.x--; break;
-         case PS2_RIGHTARROW: crossPoint.x++; break;
-         case '0': crossPoint.y--; break;
-         case 'w': crossPoint.y++; break;
-         case 's': crossPoint.y--; break;
-         case '1': crossPoint.y++; break;
-         case PS2_DOWNARROW: crossPoint.z--; break;
-         case PS2_UPARROW: crossPoint.z++; break;
-         default: break;
-     }
-
-     // draw the cross hairs on the cube at a regular interval
-     if (millis() - timer > 150) {
-       drawCrossHelper(crossPoint);
-       timer = millis();
-     }
-
-     }
-  clearCube();
-  #undef NUM_ATTACKERS
-}
 
 /***************************************************************************
  *
@@ -1802,8 +1690,6 @@ void pong() {
             case '6': if (!(player1.y == 0)) { player1.y--; eradicate(P1_COLOR); } break;
         }
 
-        }
-
 //  MOVE THE FLOATED REFERENCE POINT FOR THA BALL
         if (millis() - ballTimer > BALL_REFRESH) {
         switch (slope.ofRise) {
@@ -1908,6 +1794,7 @@ void pong() {
  ***************************************************************************/
 
 void randomColors() {
+
     while (true) {
         char c;
         if (keyboard.available()){
