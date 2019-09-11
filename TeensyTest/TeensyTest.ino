@@ -1083,10 +1083,6 @@ uint16_t colorShifter(uint16_t currentColor) {
 void MoveLED(uint8_t x, uint8_t y, uint8_t z, uint16_t currentColor, boolean gainLength) {
     currentColor = colorShifter(currentColor);
 
-//    Serial.println(0xFFFF);
-//    Serial.println(colorShifter(0xFFFF));
-//    Serial.println(LEDArray(x, y, z));
-
     if (LEDArray(x + 1, y, z) == currentColor) {
         set_led_pk(x, y, z, currentColor);
         MoveLED(x + 1, y, z, currentColor, gainLength);
@@ -1148,9 +1144,6 @@ void snakeGame() {
     uint8_t z2 = 6;
     uint16_t speed = 500;
     uint16_t length = 4;
-//    uint8_t fx;
-//    uint8_t fy;
-//    uint8_t fx;
     directions direction = FORWARD;
     uint32_t foodTimer = millis();
     uint32_t moveTimer = millis();
@@ -1158,9 +1151,6 @@ void snakeGame() {
     coord_t food[NUM_FOOD];
     boolean endGame = false;
 
-   // coord_t snake[ MAX_SNAKE_LEN ];
-   // coord_t * sk_head = snake;
-   // coord_t * sk_tail = snake;
     while (true) {
         char c = ']';
 
@@ -1170,7 +1160,7 @@ void snakeGame() {
                 break;
             }
 
-            // so that the snake cannot eat itself
+            // so that the snake cannot eat itself prevent motion in the reverse direction
             if (c == PS2_LEFTARROW && direction == RIGHT) {
                 c = ']';
             } else if (c == PS2_RIGHTARROW && direction == LEFT) {
@@ -1236,13 +1226,6 @@ void snakeGame() {
         x2 = x;
         y2 = y;
         z2 = z;
-
-//        if (addLength && eatenFood != 100) {
-//            food[eatenFood] = {
-//
-//
-//            }
-//        }
 
 
         if (millis() - moveTimer > speed && !endGame) {
