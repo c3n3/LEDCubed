@@ -1004,7 +1004,7 @@ void dodgeGame() {
         }
     }
     else if (c == PS2_RIGHTARROW){
-        for (int i = 0; i < 12; i++){
+        for (int i = 0; i < 12; ihttps://github.com/++){
 
             moveRow(10, i, RIGHT, 0xF00, true);
             moveRow(9, i, RIGHT, 0xF00, true);
@@ -1042,7 +1042,7 @@ void dodgeGame() {
  *
  ***************************************************************************/
 
-void dropMatch() {
+void dropMatch(int score) {
     for (int p = 0; p < 3; p++) {
 
     for (int k = 0; k < 12; k++) {
@@ -1059,12 +1059,14 @@ void dropMatch() {
         d(250);
 
     }
+    se
+    gameOverScore(score);
 }
-void lightMatch() {
-    dropMatch();
+void lightMatch(int score) {
+    dropMatch(score);
 }
-void pourGasoline() {
-    lightMatch();
+void pourGasoline(int score) {
+    lightMatch(score);
 }
 
 uint16_t colorShifter(uint16_t currentColor) {
@@ -1276,7 +1278,7 @@ void snakeGame() {
                 }
                 if (LEDArray(x, y, z) != 0 && addLength != true || (x - 1 >= 11 || y - 1 >= 11 || z - 1 >= 11)) {
                     endGame = true;
-                    pourGasoline();
+                    pourGasoline(length - 4);
                 } else {
                 set_led_pk(x, y, z, 0xFFFF);
 
@@ -1290,6 +1292,50 @@ void snakeGame() {
 
     }
 #undef NUM_FOOD
+}
+
+/***************************************************************************
+ *
+ *   Sub Seperator
+ *
+ ***************************************************************************/
+
+void gameOverScore(int score) {
+    uint32_t timer = millis();
+    while (true) {
+        char c;
+
+        if (keyboard.available()) {
+
+            c = keyboard.read();
+            if (c == PS2_ESC) {
+                break;
+
+            }
+        }
+
+        for (int i = 0; i < strlen(score); i++) {
+            typeChars(String(score)[i]);
+        }
+
+        if (millis() - timer > 500) {
+            for (int k = 0; k < 12; k++) {
+                moveRow(11, k, FORWARD);
+                moveRow(11, k, BACKWARD);
+                moveRow(11, k, LEFT);
+                moveRow(11, k, RIGHT);
+
+            }
+            for (int i = 0; i < 4; i++) {
+                for (int k = 1; k < 11; k++) {
+                    moveRow(1, k, directions(i + 1), 1, false, 1, 10);
+                }
+            }
+
+
+            timer = millis();
+        }
+    }
 }
 
 /***************************************************************************
