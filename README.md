@@ -16,9 +16,28 @@ The Layout of the program goes as such:
  
  will most likely make a mini programs file just for their code, and a supporting functions one too
 
+TODO:
+Optimize code
 
+  - Nest (Wrires)
 
+  - Rolling Text Display
 
+  - More cool animations
+
+  - 3d tetris
+
+  - 3d minesweeper
+
+  - oscilating 3d graph
+
+  - Stand
+
+  - Glass box
+
+  - Power inside stand
+
+  - Maze/DoomMaze
 
 
 
