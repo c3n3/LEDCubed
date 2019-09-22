@@ -5,7 +5,7 @@
 // Developed with embedXcode
 // http://embedXcode.weebly.com
 //
-// Project 		TeensyTest
+// Project 		0_LED_Cube
 //
 // Created by 	William Lies, 10/21/17 9:56 AM
 // 				William Lies
