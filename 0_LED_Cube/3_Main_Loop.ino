@@ -26,11 +26,12 @@ void mainSwitch(mainStates state) {
         }
 
         char c;
-
         if (keyboard.available()) {
             c = keyboard.read();
+            clearCube();
             //i = c - '0';
         }
+
         for (int i = 0; i < 12; i++) {
             for (int j = 0; j < 12; j++) {
                 for (int k = 0; k < 6; k++) {
@@ -152,7 +153,6 @@ void mainSwitch(mainStates state) {
 
 void loop()
 {
-
     mainSwitch(TOP);
 
 } //end loop

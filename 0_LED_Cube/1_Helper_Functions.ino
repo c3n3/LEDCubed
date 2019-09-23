@@ -463,10 +463,10 @@ uint8_t getFontIndex(char c) {
 
 // draws a char c at the coordinates in the direction of the viewPoint with the color
 void drawChar(char c, int x1, int y1, int z1, directions viewpoint, uint16_t color) {
-    for (int i = 1; i < 4; i++) {
+    for (int i = 0; i < 3; i++) {
       for (int j = 0; j < 5; j++) {
-        if (font[getFontIndex(c)][j*i]) {
-          directionalCubeArray(x1 + i - 1, y1 + j*i, z1, viewpoint, true, color);
+        if (font[getFontIndex(c)][i*5 + j]) {
+          directionalCubeArray(x1 + i, y1 + j, z1, viewpoint, true, color);
         }
       }
     }
@@ -612,6 +612,7 @@ void DrawFigure(int x1, int y1, int z1, int x2, int y2, int z2, uint16_t color) 
 
 void gameOverScore(int score) {
     uint32_t timer = millis();
+    boolean started = false;
     while (true) {
         char c;
 
@@ -624,10 +625,12 @@ void gameOverScore(int score) {
             }
         }
 
+        if (!started) {
         for (int i = 0; i < strlen(score); i++) {
             typeChars(String(score)[i]);
         }
-
+        started = true;
+        }
         if (millis() - timer > 500) {
             for (int k = 0; k < 12; k++) {
                 moveRow(11, k, FORWARD);

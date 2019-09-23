@@ -1,3 +1,5 @@
+#include <PS2Keyboard.h>
+
 //
 // 0_LED_Cube
 //
@@ -88,7 +90,7 @@ void (*appFunctions[3][5])() {{lightCube, snow, randomColors, swirl, test}, {som
  **************************************************************************/
 //escape corispondes to the
 
-//mainStates state = TOP;
+mainStates state = TOP;
 
 PS2Keyboard keyboard;
 volatile uint8_t     gs_buf[NUM_BYTES];  //Buffer written to TLCs over SPI (12 bit color values)

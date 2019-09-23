@@ -583,11 +583,11 @@ void lights() {
             c=keyboard.read();
             if (c == PS2_ESC) {
                 break;
+                typeChars(c);
             }
         }
 
-        setPackedPackedLED(rand() % 4096 & 0x0777, 0xFFFF);
-        clearCube();
+        
     }
 }
 
@@ -1181,18 +1181,9 @@ void test() {
             c=keyboard.read();
             if (c == PS2_ESC) {
                  break;
+                 typeChars(c);
             }
         }
-        if (millis() - timer > 50) {
-            co = colorShifter(co);
-            timer += 50;
-
-            //Serial.println(((0xFFFF & 0xF800))>>8);
-
-        }
-        setPackedPackedLED(pk_coord(1, 1, 1), co);
-
-        //DO STUFF HERE
 
     }
     clearCube();
