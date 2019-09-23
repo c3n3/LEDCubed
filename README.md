@@ -12,10 +12,8 @@ The Layout of the program goes as such:
  
  mini programs are just self contained loops that only exit when ESC is pressed
  
- all mini programs must be stored in the appFunctions[] (will soon be [][]) pointer array
+ all mini programs must be stored in the appFunctions array
  
- will most likely make a mini programs file just for their code, and a supporting functions one too
-
 TODO:
 
   - Optimize code
