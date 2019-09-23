@@ -17,7 +17,8 @@ The Layout of the program goes as such:
  will most likely make a mini programs file just for their code, and a supporting functions one too
 
 TODO:
-Optimize code
+
+  - Optimize code
 
   - Nest (Wrires)
 
