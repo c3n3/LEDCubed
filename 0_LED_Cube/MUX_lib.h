@@ -67,7 +67,7 @@
 #define NUM_LEDS_DIM    (12)            //Number of LEDs in a dimension
 
 /*------------------------------------------------------
- *  Funciton Prototypes
+ *  Function Prototypes
  -----------------------------------------------------*/
 
 void mux_init();

@@ -202,8 +202,6 @@ void MoveLED(uint8_t x, uint8_t y, uint8_t z, uint16_t currentColor, boolean gai
 
 }
 
-
-
 void snakeGame() {
 #define NUM_FOOD 10
     boolean start = false;
@@ -1188,6 +1186,49 @@ void test() {
     }
     clearCube();
 }
+
+/***************************************************************************
+ *
+ *
+ *  Switch between r g and b
+ *
+ *
+ ***************************************************************************/
+void colorSwitcher() {
+    //max 2**16 - 1
+    uint16_t color = 0;
+    const float intensity = 0.5;
+
+    while (true) {
+
+    char c;
+
+    if (keyboard.available()){
+
+        c=keyboard.read();
+        if (c == PS2_ESC) {
+            break;
+        }
+
+        if (c == 'r')
+            color = pk_color( (int)(255*intensity), 0, 0);
+        if(c == 'g')
+            color = pk_color(0,(int)(255*intensity),0);
+        if(c == 'b')
+            color = pk_color(0,0,(int)(255*intensity));
+    }
+
+    for (int i = 0; i < 12; ++i) {
+        for (int j = 0; j < 12; ++j) {
+            for (int k = 0; k < 12; ++k) {
+                set_led_pk(i, j, k, color);
+            }
+        }
+    }
+}
+clearCube();}
+
+
 
 /***************************************************************************
  *

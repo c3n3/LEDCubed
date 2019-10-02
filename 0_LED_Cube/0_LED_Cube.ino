@@ -1,5 +1,4 @@
 #include <PS2Keyboard.h>
-
 //
 // 0_LED_Cube
 //
@@ -75,9 +74,9 @@ typedef struct{
 
 #define GAMEAMOUNT 3
 #define ANIMATIONAMOUNT 5
-#define INTERACTIVEANIMATIONSAMOUNT 1
+#define INTERACTIVEANIMATIONSAMOUNT 2
 //store all functions in here after declaration
-void (*appFunctions[3][5])() {{lightCube, snow, randomColors, swirl, test}, {someThing},  {dodgeGame, snakeGame, pong}};
+void (*appFunctions[3][5])() {{lightCube, snow, randomColors, swirl, test}, {someThing, colorSwitcher},  {dodgeGame, snakeGame, pong}};
 //String appFunctions[] = {"dodgeGame"};
 /**************************************************************************
  *
@@ -294,7 +293,7 @@ uint8_t font[][15] = {
   { //3
     1,0,1,0,1,
     1,0,1,0,1,
-    0,1,1,1,0,
+    1,1,1,1,1,
   },
   { //4
     0,0,1,1,1,
