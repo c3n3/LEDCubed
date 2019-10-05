@@ -77,7 +77,11 @@ typedef struct{
 #define ANIMATIONAMOUNT 5
 #define INTERACTIVEANIMATIONSAMOUNT 1
 //store all functions in here after declaration
-void (*appFunctions[3][5])() {{lightCube, snow, randomColors, swirl, test}, {someThing},  {dodgeGame, snakeGame, pong}};
+void (*appFunctions[3][
+  GAMEAMOUNT > ANIMATIONAMOUNT ?
+   (GAMEAMOUNT > INTERACTIVEANIMATIONSAMOUNT ? GAMEAMOUNT : INTERACTIVEANIMATIONS)
+    : (ANIMATIONAMOUNT > INTERACTIVEANIMATIONSAMOUNT ? ANIMATIONAMOUNT : INTERACTIVEANIMATIONSAMOUNT
+    )])() {{lightCube, snow, randomColors, swirl, test}, {someThing},  {dodgeGame, snakeGame, pong}};
 //String appFunctions[] = {"dodgeGame"};
 /**************************************************************************
  *
