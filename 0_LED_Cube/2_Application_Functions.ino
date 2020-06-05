@@ -47,6 +47,7 @@ void dodgeGame() {
 
     if (keyboard.available()){
         start = true;
+        timer0 = millis();
         c=keyboard.read();
         Serial.print(c);
         if (c == PS2_ESC) {
@@ -132,7 +133,7 @@ void dropMatch(int score) {
         d(250);
 
     }
-    gameOverScore(score);
+  //  gameOverScore(score);
 }
 void lightMatch(int score) {
     dropMatch(score);
@@ -587,7 +588,7 @@ void lights() {
             }
         }
 
-        
+
     }
 }
 
@@ -696,8 +697,8 @@ void pong() {
     slope.ofRise = DOWN;
     slope.ofRun = LEFT;
     slope.ofZRun = BACKWARD;
-    slope.zRun = 1;
-    slope.rise = 1;
+    slope.zRun = 2;
+    slope.rise = 0.5;
     slope.run = 1;
     float ballx = 0;
     float bally = 3;
@@ -781,13 +782,13 @@ void pong() {
             ball.z = (uint8_t) (ballz + 0.5);
             if (LEDArray(ball.x, ball.y, ball.z) != 0 || ( ball.x != 0 || ball.x != 11)) {
 
-            if (ball.x > 50) {
-                ball.x = 0;
-            } else if (ball.x > 11) {
-                ball.x = 11;
-                if (rand() % 2 == 0) {
+              // if the balls point has been set to lower than 0 uses underflow
+                if (ball.x > 50) {
+                    ball.x = 0;
+                } else if (ball.x > 11) {
+                    ball.x = 11;
                 }
-            }
+
                 if (ball.y > 50) {
                     ball.y = 0;
                 } else if (ball.y > 11) {
@@ -803,7 +804,7 @@ void pong() {
                 slope.ofRise = directions((rand() % 2) * 5);
                 slope.ofZRun = directions((rand() % 2) * 2 + 1);
 
-                slope.ofRun = RIGHT;
+                // slope.ofRun = ;
             } else if (ball.x == 11) {
                 slope.ofRun = LEFT;
             }
@@ -834,6 +835,30 @@ void pong() {
         DrawFigure(player2.x, player2.y + PADDLE_LENGTH / 2, player2.z + PADDLE_LENGTH / 2, player2.x, player2.y + PADDLE_LENGTH - PADDLE_LENGTH / 2, player2.z + PADDLE_LENGTH - PADDLE_LENGTH / 2, P2_COLOR);
         DrawFigure(player1.x, player1.y, player1.z, player1.x, player1.y + PADDLE_LENGTH, player1.z + PADDLE_LENGTH, P1_COLOR);
         DrawFigure(player2.x, player2.y, player2.z, player2.x, player2.y + PADDLE_LENGTH, player2.z + PADDLE_LENGTH, P2_COLOR);
+
+        //check the game conditions
+        if (ball.x == 0) {
+          if (!(player2.z <= ball.z && player2.z + PADDLE_LENGTH <= ball.z && ball.y >= player2.y && ball.y <= player2.y + PADDLE_LENGTH)) {
+              set_led(1,1,1,255,255,255);
+              //pourGasoline(1);
+              // break;
+          }
+          else {
+            set_led(1,1,1,0,0,0);
+
+          }
+        }
+        if (ball.x == 11) {
+          if (!(player1.z <= ball.z && player1.z + PADDLE_LENGTH <= ball.z && ball.y >= player1.y && ball.y <= player1.y + PADDLE_LENGTH)) {
+            set_led(1,1,1,255,255,255);
+
+              //pourGasoline(1);
+//              break;
+          }
+          else {
+            set_led(1,1,1,0,0,0);
+          }
+        }
     }
     clearCube(); //exit game
 #undef P2_COLOR
@@ -1188,6 +1213,50 @@ void test() {
     }
     clearCube();
 }
+/***************************************************************************
+ *
+ *
+ *  BASIC 'APP' FUNCTION SETUP BELOW
+ *
+ *
+ ***************************************************************************/
+
+ void rotate() {
+float percent = 0;
+uint32_t time9 = millis();
+  auto func = [] (int x, float p) -> int {
+     return ((x - 5.5) * tan(2 * PI * p)) + 5.5;
+  };
+ while (true) {
+    char c;
+    if (keyboard.available()){
+
+        c=keyboard.read();
+        if (c == PS2_ESC) {
+            break;
+        }
+    }
+    if(millis() - time9 > 120) {
+    for (int i = 0; i < 12; i++) {
+      float point = func(i, percent);
+      float prev = func(i, percent - 1.0 / 25);
+    for (int z = 0; z < 12; z++) {
+      if (point < 12 && point >= 0 /* && point - ((int)(point + 0.5)) < 0.5 */) {
+        set_led(i, z, (int) (point + 0.5), 120, 120, 255 * (((int)(percent * 100) % 12) +  1.00));
+      }
+      if (prev < 12 && prev >= 0 && (int) (prev + 0.5) != (int) (point + 0.5)) {
+        set_led_pk(i, z, (int) (prev + 0.5), 0x0000);
+      }
+    }
+  }
+percent += 1.0 / 25;
+time9 += 120;
+}
+
+    }
+ clearCube();
+ }
+
 
 /***************************************************************************
  *

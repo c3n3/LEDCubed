@@ -22,6 +22,7 @@
 #include "SPI.h"
 #include "TLC_lib.h"
 #include "MUX_lib.h"
+
 //keyboard library
 // Core library for code-sense - IDE-based
 #if defined(ENERGIA) // LaunchPad specific
@@ -35,8 +36,9 @@
 #else // error
 #error Platform not defined
 #endif // end IDE
-
+#include <math.h>
 #include "PS2Keyboard.h"
+#include "helper_functions.h"
 //#include "PS2Keyboard.h"
 //hello from xcode
 enum mainStates {ANIMATIONS, INTERACTIVEANIMATIONS, GAMES, TOP};
@@ -74,14 +76,14 @@ typedef struct{
  **************************************************************************/
 
 #define GAMEAMOUNT 3
-#define ANIMATIONAMOUNT 5
+#define ANIMATIONAMOUNT 6
 #define INTERACTIVEANIMATIONSAMOUNT 1
 //store all functions in here after declaration
 void (*appFunctions[3][
   GAMEAMOUNT > ANIMATIONAMOUNT ?
    (GAMEAMOUNT > INTERACTIVEANIMATIONSAMOUNT ? GAMEAMOUNT : INTERACTIVEANIMATIONS)
     : (ANIMATIONAMOUNT > INTERACTIVEANIMATIONSAMOUNT ? ANIMATIONAMOUNT : INTERACTIVEANIMATIONSAMOUNT
-    )])() {{lightCube, snow, randomColors, swirl, test}, {someThing},  {dodgeGame, snakeGame, pong}};
+    )])() {{lightCube, snow, randomColors, swirl, test, rotate}, {someThing},  {dodgeGame, snakeGame, pong}};
 //String appFunctions[] = {"dodgeGame"};
 /**************************************************************************
  *
@@ -148,8 +150,6 @@ void setup()
 
     pinMode(23, OUTPUT);
     digitalWrite( 23, HIGH);
-
-
 }
 
 
