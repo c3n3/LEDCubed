@@ -7,6 +7,7 @@
 class Dodge: public App
 {
 public:
+    const String title = "Dodge";
     void run(uint32_t time = 0, bool timed = false);
 };
 

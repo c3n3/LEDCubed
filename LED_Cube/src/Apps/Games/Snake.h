@@ -13,6 +13,7 @@ private:
     void MoveLED(uint8_t x, uint8_t y, uint8_t z, uint16_t currentColor, bool gainLength);
 
 public:
+    const String title = "Snake";
     void run(uint32_t time = 0, bool timed = false);
     ~Snake();
 };

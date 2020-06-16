@@ -1,11 +1,7 @@
 #include <PS2Keyboard.h>
-
-#include <vector>
 #include "SPI.h"
 #include "TLC_lib.h"
 #include "MUX_lib.h"
-
-
 
 // Core library for code-sense - IDE-based
 #if defined(ENERGIA) // LaunchPad specific
@@ -25,145 +21,28 @@ volatile uint16_t    px_buf[NUM_LEDS];   //Pixel buffer storing each LED color a
 
 #include <math.h>
 #include "PS2Keyboard.h"
-//#include "helper_functions.h"
-// #include "Helpful_Functions.h"
-// #include "src/Apps/App_Includes.h"
+#include "src/Tools/Input/Input.h"
 #include "src/LED_Cube_library/globals.h"
+#include "src/Tools/OS/Menu.h"
 #include "src/Apps/App_Includes.h"
 #include "src/Apps/App.h"
+#include "src/Tools/MathObjects/UltamateTrigLookUp.h"
 
-// #define GAMEAMOUNT 3
-// #define ANIMATIONAMOUNT 6
-// //store all functions in here after declaration
-// App applications[2][GAMEAMOUNT > ANIMATIONAMOUNT ? GAMEAMOUNT : ANIMATIONAMOUNT] () 
-// {{Snow(), Swirl()}, {Dodge(), Snake(), Pong()}};
-
-// std::vector <App*> games{new Dodge(), new Snake(), new Pong()};
-// std::vector <App*> animations{new Snow(), new Swirl()};
-
+// just no, no, no. This must be exterminated
 uint16_t white = 0xFFFF;
 
+// this too, use Input::keyboard
 PS2Keyboard keyboard;
 
-// font for typeing on the cube
-uint16_t font[37] = {
-   //A
-    0b1111000101111100
-  ,
-   //B
-    0b1111110101010100
-  ,
-   //C
-    0b0111010001100010
-  ,
-   //D
-    0b1111110001011100
-  ,
-   //E
-    0b1111110101100010
-  ,
-   //F
-    0b1111100101000010
-  ,
-   //G
-    0b0111010001011000
-  ,
-   //H
-    0b1111100100111110
-  ,
-   //I
-    0b1000111111100010
-  ,
-   //J
-    0b0100010000011110
-  ,
-   //k
-    0b1111101110100010
-  ,
-   //L
-    0b1111110000100000
-  ,
-   //M
-    0b1111100110111110
-  ,
-   //N
-    0b1111101110111110
-  ,
-   //O
-    0b0111010001011100
-  ,
-   //P
-    0b1111100101000100
-  ,
-   //Q
-    0b0111011001101100
-  ,
-   //R
-    0b1111100101110100
-  ,
-   //S
-    0b1001010101010010
-  ,
-   //T
-    0b0000111111000010
-  ,
-   //U
-    0b0111110000011110
-  ,
-   //V
-    0b0011110000001110
-  ,
-   //W
-    0b1111101100111110
-  ,
-   //X
-    0b1101100100110110
-  ,
-   //Y
-    0b0001111100000110
-  ,
-   //Z
-    0b1100110101100110
-  ,
-   //1
-    0b1001011111100000
-  ,
-   //2
-    0b1100110101100110
-  ,
-   //3
-    0b1010110101011100
-  ,
-   //4
-    0b0011100100111110
-  ,
-   //5
-    0b1001110101010010
-  ,
-   //6
-    0b0111010101010000
-  ,
-   //7
-    0b0000100001111110
-  ,
-   //8
-    0b1101110101110110
-  ,
-   //9
-    0b0001100101111110
-  ,
-   //0
-    0b1111110001111110
-  ,
-   //
-    0b0000000000000000
-  ,
-};
-
+// setup function
 void setup()
 {
     delay(1000);
+
+    // only one will be victorious....
     keyboard.begin(15, 21);
+    Input::keyboard.begin(15, 21);
+
     delay(200);
     mux_init();
     init_TLC();
@@ -190,12 +69,17 @@ void setup()
  **************************************************************************/
 void loop()
 {
-    const uint8_t appElements = 5;
-    const uint8_t screenSaverElements = 2;
-    App* stuff[appElements] = {new Snake(), new Dodge(), new Pong(), new Snow(), new Swirl()};
-    App* screenSaver[screenSaverElements] = {new Snow(), new Swirl()};
+    // dont forget this when adding apps
+    const uint8_t appElements = 8;
+    const uint8_t screenSaverElements = 5;
 
+    // in regards to the use of new, we do not need to worry about leaking memory because this will last till the thing is turned off.
+    // Could possibly optimise memory by not allocating all apps at once, but will need a new mechinism
+    App* stuff[appElements] = {new Snake(), new Dodge(), new Pong(), new Snow(), new Swirl(), new Space(), new Swirl(), new RandomParticles()};
+    App* screenSaver[screenSaverElements] = {stuff[3], stuff[4], stuff[5], stuff[6], stuff[7]};
+
+    // creation of the menu application 
     Menu menu = Menu(((App**)stuff), appElements, (App**)screenSaver, screenSaverElements);
 
-    menu.run();
+    menu.run(); // thats all folks
 } //end loop

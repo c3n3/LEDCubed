@@ -1,8 +1,8 @@
 #include "Helpful_Functions.h"
 //this function switches which orientation you may look at the cube,
 // very very useful function, allows writting other helper functions in terms of a direction so that you dont have to have 6 types of the same function for each direction
-// the  coordinates go as follows, the face you look at for each direction, the reletive 'z' coordinate is the third one, the reletive 'x' is either the true z or x direction, and the second coordinate is always the reletive 'y'
- uint16_t help::directionalCubeArray(uint8_t firstCord, uint8_t secondCord, uint8_t thirdCord, directions direction, boolean setLED, uint16_t color)
+// the  coordinates go as follows, the face you look at for each direction, the reletive 'z' coordinate is the depth from face, the reletive 'x' is the right and left axis across the face, and the second coordinate is always the reletive 'y'
+uint16_t help::directionalCubeArray(const uint8_t &firstCord, const uint8_t &secondCord, const uint8_t &thirdCord, directions direction, bool setLED, uint16_t color)
 {
     if (setLED)
     {
@@ -58,6 +58,52 @@
             break;
         }
     }
+    return 0; // if people input nonsense, give them arbitrary nonsense
+}
+
+ui8 help::normalize(float& notNormal)
+{
+    ui8 normalized = (notNormal + 0.5);
+    if (normalized - 1 > 10)
+    {
+        normalized = normalized > 200 ? 0 : 11; // that 200 is completely arbitrary, but it should work
+    }
+    return normalized;
+}
+
+void help::switchToDirectionalCoord(ui8& nonRelativeX, ui8& nonRelativeY, ui8& nonRelativeZ, directions direction)
+{
+    // This is the the flip
+    uint8_t temp;
+    switch (direction)
+    {
+    case UP:
+        temp = nonRelativeY;
+        nonRelativeY = nonRelativeZ;
+        nonRelativeZ = temp;
+        break;
+    case LEFT:
+        temp = nonRelativeX;
+        nonRelativeX = 11 - nonRelativeZ;
+        nonRelativeZ = temp;
+        break;
+    case BACKWARD:
+        nonRelativeX = 11 - nonRelativeX;
+        nonRelativeZ = 11 - nonRelativeZ;
+        break;
+    case RIGHT:
+        temp = nonRelativeX;
+        nonRelativeX = nonRelativeZ;
+        nonRelativeZ = 11 - temp;
+        break;
+    case DOWN:
+        temp = nonRelativeY;
+        nonRelativeY = 11 - nonRelativeZ;
+        nonRelativeZ = temp;
+        break;
+    default:
+        break;
+    }
 }
 
 /***************************************************************************
@@ -73,7 +119,7 @@
  *
  ***************************************************************************/
 
- void help::moveRow(uint8_t firstCoord, uint8_t secondCoord, directions viewPoint, uint16_t specificColor, boolean collective, uint8_t start, uint8_t end, uint16_t color)
+void help::moveRow(uint8_t firstCoord, uint8_t secondCoord, directions viewPoint, uint16_t specificColor, boolean collective, uint8_t start, uint8_t end, uint16_t color)
 {
     if (!collective && end == 11)
     {
@@ -153,7 +199,7 @@
 }
 
 // delete all of a color on the entire cube
- void help::eradicate(uint16_t color)
+void help::eradicate(uint16_t color)
 {
     for (uint8_t i = 0; i < 12; i++)
     {
@@ -171,7 +217,7 @@
 }
 
 //TODO: delete this thing if safe
- void help::setRandomLED(uint8_t leds, directions direction, uint16_t color, boolean threeD)
+void help::setRandomLED(uint8_t leds, directions direction, uint16_t color, boolean threeD)
 {
     if (!threeD)
     {
@@ -183,7 +229,7 @@
 }
 
 //no up or down yet
- void help::angledMove(uint8_t rise, uint8_t run, directions direction, uint16_t color)
+void help::angledMove(uint8_t rise, uint8_t run, directions direction, uint16_t color)
 {
     //rise
     for (uint8_t k = 0; k < rise; k++)
@@ -209,154 +255,8 @@
     }
 }
 
-/***************************************************************************
-  *
-  *   Font Functions
-  *
-  ***************************************************************************/
-
-// TODO: use a thought of c - 'a' to get this not huge function
- uint8_t help::getFontIndex(char c)
-{
-    switch (c)
-    {
-    case 'A':
-        return 0;
-    case 'B':
-        return 1;
-    case 'C':
-        return 2;
-    case 'D':
-        return 3;
-    case 'E':
-        return 4;
-    case 'F':
-        return 5;
-    case 'G':
-        return 6;
-    case 'H':
-        return 7;
-    case 'I':
-        return 8;
-    case 'J':
-        return 9;
-    case 'K':
-        return 10;
-    case 'L':
-        return 11;
-    case 'M':
-        return 12;
-    case 'N':
-        return 13;
-    case 'O':
-        return 14;
-    case 'P':
-        return 15;
-    case 'Q':
-        return 16;
-    case 'R':
-        return 17;
-    case 'S':
-        return 18;
-    case 'T':
-        return 19;
-    case 'U':
-        return 20;
-    case 'V':
-        return 21;
-    case 'W':
-        return 22;
-    case 'X':
-        return 23;
-    case 'Y':
-        return 24;
-    case 'Z':
-        return 25;
-    case 1:
-        return 26;
-    case 2:
-        return 27;
-    case 3:
-        return 28;
-    case 4:
-        return 29;
-    case 5:
-        return 30;
-    case 6:
-        return 31;
-    case 7:
-        return 32;
-    case 8:
-        return 33;
-    case 9:
-        return 34;
-    case 0:
-        return 35;
-    case PS2_BACKSPACE:
-        return 36;
-    }
-}
-
-// draws a char c at the coordinates in the direction of the viewPoint with the color
- void help::drawChar(char c, int x1, int y1, int z1, directions viewpoint, uint16_t color)
-{
-    uint16_t letter = font[getFontIndex(c)];
-    for (int i = 0; i < 3; i++)
-    {
-        for (int j = 0; j < 5; j++)
-        {
-            bool on = letter & 0x8000; // get the last bit
-            letter = letter << 1;      // shift to the left to get the next bit
-            // if (font[getFontIndex(c)][i * 5 + j])
-            directionalCubeArray(x1 + i, y1 + j, z1, viewpoint, true, on ? color : 0x0000);
-        }
-    }
-}
-
-// funciton to let continuous typing of characters on the cube, (it wraps chars around as space fills up)
-//  void help::typeChars(char c)
-// {
-//     directions direction = FORWARD;
-//     uint8_t xPosition = charCount % 4;
-//     uint8_t yPosition = 7;
-//     uint16_t color = 0xFFFF;
-//     if (charCount % 2)
-//     {
-//         color = 0x00FF;
-//     }
-//     if (charCount > 20)
-//     {
-//         yPosition = 0;
-//     }
-//     if ((charCount <= 8 && 4 < charCount) || charCount > 20)
-//     {
-//         direction = LEFT;
-//     }
-//     else if (charCount <= 12)
-//     {
-//         direction = BACKWARD;
-//     }
-//     else if (charCount <= 16)
-//     {
-//         direction = RIGHT;
-//     }
-//     else if (charCount <= 24)
-//     {
-//         direction = FORWARD;
-//     }
-//     if (c == PS2_BACKSPACE)
-//     {
-//         charCount--;
-//     }
-//     else
-//     {
-//         charCount++;
-//     }
-//     drawChar(c, xPosition, yPosition, 0, direction, color);
-// }
-
 // draws a box based on the 6 coordinates (Two Points in the cube) and the color (This thing definitley needs rewritting)
- void help::DrawFigure(int x1, int y1, int z1, int x2, int y2, int z2, uint16_t color)
+void help::DrawFigure(int x1, int y1, int z1, int x2, int y2, int z2, uint16_t color)
 {
     int xDist = abs(x1 - x2);
     int yDist = abs(y1 - y2);
@@ -466,53 +366,4 @@
             //delay(200);
         }
     }
-}
-
-// used to display scores of a game
- void help::gameOverScore(int score)
-{
-    // uint32_t timer = millis();
-    // boolean started = false;
-    // while (true)
-    // {
-    //     char c;
-
-    //     if (keyboard.available())
-    //     {
-
-    //         c = keyboard.read();
-    //         if (c == PS2_ESC)
-    //         {
-    //             break;
-    //         }
-    //     }
-
-    //     if (!started)
-    //     {
-    //         for (int i = 0; i < strlen(score); i++)
-    //         {
-    //             typeChars(String(score)[i]);
-    //         }
-    //         started = true;
-    //     }
-    //     if (millis() - timer > 500)
-    //     {
-    //         for (int k = 0; k < 12; k++)
-    //         {
-    //             moveRow(11, k, FORWARD);
-    //             moveRow(11, k, BACKWARD);
-    //             moveRow(11, k, LEFT);
-    //             moveRow(11, k, RIGHT);
-    //         }
-    //         for (int i = 0; i < 4; i++)
-    //         {
-    //             for (int k = 1; k < 11; k++)
-    //             {
-    //                 moveRow(1, k, directions(i + 1), 1, false, 1, 10);
-    //             }
-    //         }
-
-    //         timer = millis();
-    //     }
-    // }
 }

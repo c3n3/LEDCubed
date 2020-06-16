@@ -1,4 +1,5 @@
 #include "Menu.h"
+#include "../../Tools/TypingEngine/TypeEngine.h"
 Menu::Menu(App **theApps, uint8_t m1, App** screenSavers, uint8_t m2)
 {
     
@@ -38,7 +39,9 @@ void Menu::run()
             {
                 (*apps[current]).run();
             }
-            help::drawChar(current + '0', 5, 5, 0, FORWARD, white);
+            TypeEngine::drawChar(current + '0', 5, 5, 0, FORWARD, white);
+            TypeEngine::drawChar(current + '0', 6, 5, 1, FORWARD, white);
+            TypeEngine::autoTypeLower((*apps[current]).title, 0x001F, 0xFFE0, true);
             c = '\0';
         }
     }

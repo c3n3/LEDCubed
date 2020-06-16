@@ -7,6 +7,7 @@
 class Snow: public App
 {
 public:
+    const String title = "Snow";
     void run(uint32_t time = 0, bool timed = false);
 };
 
