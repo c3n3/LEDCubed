@@ -1,0 +1,155 @@
+EESchema Schematic File Version 2
+LIBS:power
+LIBS:device
+LIBS:transistors
+LIBS:conn
+LIBS:linear
+LIBS:regul
+LIBS:74xx
+LIBS:cmos4000
+LIBS:adc-dac
+LIBS:memory
+LIBS:xilinx
+LIBS:microcontrollers
+LIBS:dsp
+LIBS:microchip
+LIBS:analog_switches
+LIBS:motorola
+LIBS:texas
+LIBS:intel
+LIBS:audio
+LIBS:interface
+LIBS:digital-audio
+LIBS:philips
+LIBS:display
+LIBS:cypress
+LIBS:siliconi
+LIBS:opto
+LIBS:atmel
+LIBS:contrib
+LIBS:valves
+LIBS:IHE
+LIBS:Custom
+LIBS:LED Cube-cache
+EELAYER 25 0
+EELAYER END
+$Descr A4 11693 8268
+encoding utf-8
+Sheet 16 24
+Title ""
+Date ""
+Rev ""
+Comp ""
+Comment1 ""
+Comment2 ""
+Comment3 ""
+Comment4 ""
+$EndDescr
+$Comp
+L P-Channel_MOSFET Q17
+U 1 1 5A5779DE
+P 5200 4450
+AR Path="/5A576665/5A57783E/5A5779DE" Ref="Q17"  Part="1" 
+AR Path="/5A576665/5A578D88/5A5779DE" Ref="Q20"  Part="1" 
+AR Path="/5A576665/5A57967F/5A5779DE" Ref="Q23"  Part="1" 
+AR Path="/5A576665/5A581EA2/5A5779DE" Ref="Q26"  Part="1" 
+AR Path="/5A576665/5A581EC0/5A5779DE" Ref="Q29"  Part="1" 
+AR Path="/5A576665/5A581EDE/5A5779DE" Ref="Q32"  Part="1" 
+AR Path="/5A576665/5A584A71/5A5779DE" Ref="Q35"  Part="1" 
+AR Path="/5A576665/5A584A8F/5A5779DE" Ref="Q38"  Part="1" 
+AR Path="/5A576665/5A584AAD/5A5779DE" Ref="Q41"  Part="1" 
+AR Path="/5A576665/5A587342/5A5779DE" Ref="Q44"  Part="1" 
+AR Path="/5A576665/5A587360/5A5779DE" Ref="Q47"  Part="1" 
+AR Path="/5A576665/5A58737E/5A5779DE" Ref="Q50"  Part="1" 
+F 0 "Q50" H 5425 4450 60  0000 C CNN
+F 1 "P-Channel_MOSFET" H 5120 4870 60  0001 C CNN
+F 2 "TO_SOT_Packages_SMD:SOT-23" H 5200 4450 60  0001 C CNN
+F 3 "" H 5200 4450 60  0000 C CNN
+	1    5200 4450
+	1    0    0    1   
+$EndComp
+$Comp
+L P-Channel_MOSFET Q18
+U 1 1 5A5779E5
+P 5650 4100
+AR Path="/5A576665/5A57783E/5A5779E5" Ref="Q18"  Part="1" 
+AR Path="/5A576665/5A578D88/5A5779E5" Ref="Q21"  Part="1" 
+AR Path="/5A576665/5A57967F/5A5779E5" Ref="Q24"  Part="1" 
+AR Path="/5A576665/5A581EA2/5A5779E5" Ref="Q27"  Part="1" 
+AR Path="/5A576665/5A581EC0/5A5779E5" Ref="Q30"  Part="1" 
+AR Path="/5A576665/5A581EDE/5A5779E5" Ref="Q33"  Part="1" 
+AR Path="/5A576665/5A584A71/5A5779E5" Ref="Q36"  Part="1" 
+AR Path="/5A576665/5A584A8F/5A5779E5" Ref="Q39"  Part="1" 
+AR Path="/5A576665/5A584AAD/5A5779E5" Ref="Q42"  Part="1" 
+AR Path="/5A576665/5A587342/5A5779E5" Ref="Q45"  Part="1" 
+AR Path="/5A576665/5A587360/5A5779E5" Ref="Q48"  Part="1" 
+AR Path="/5A576665/5A58737E/5A5779E5" Ref="Q51"  Part="1" 
+F 0 "Q51" H 5875 4100 60  0000 C CNN
+F 1 "P-Channel_MOSFET" H 5570 4520 60  0001 C CNN
+F 2 "TO_SOT_Packages_SMD:SOT-23" H 5650 4100 60  0001 C CNN
+F 3 "" H 5650 4100 60  0000 C CNN
+	1    5650 4100
+	1    0    0    1   
+$EndComp
+$Comp
+L P-Channel_MOSFET Q19
+U 1 1 5A5779EC
+P 6100 3750
+AR Path="/5A576665/5A57783E/5A5779EC" Ref="Q19"  Part="1" 
+AR Path="/5A576665/5A578D88/5A5779EC" Ref="Q22"  Part="1" 
+AR Path="/5A576665/5A57967F/5A5779EC" Ref="Q25"  Part="1" 
+AR Path="/5A576665/5A581EA2/5A5779EC" Ref="Q28"  Part="1" 
+AR Path="/5A576665/5A581EC0/5A5779EC" Ref="Q31"  Part="1" 
+AR Path="/5A576665/5A581EDE/5A5779EC" Ref="Q34"  Part="1" 
+AR Path="/5A576665/5A584A71/5A5779EC" Ref="Q37"  Part="1" 
+AR Path="/5A576665/5A584A8F/5A5779EC" Ref="Q40"  Part="1" 
+AR Path="/5A576665/5A584AAD/5A5779EC" Ref="Q43"  Part="1" 
+AR Path="/5A576665/5A587342/5A5779EC" Ref="Q46"  Part="1" 
+AR Path="/5A576665/5A587360/5A5779EC" Ref="Q49"  Part="1" 
+AR Path="/5A576665/5A58737E/5A5779EC" Ref="Q52"  Part="1" 
+F 0 "Q52" H 6325 3750 60  0000 C CNN
+F 1 "P-Channel_MOSFET" H 6020 4170 60  0001 C CNN
+F 2 "TO_SOT_Packages_SMD:SOT-23" H 6100 3750 60  0001 C CNN
+F 3 "" H 6100 3750 60  0000 C CNN
+	1    6100 3750
+	1    0    0    1   
+$EndComp
+Wire Wire Line
+	5250 3200 5250 4150
+Wire Wire Line
+	4400 3200 6150 3200
+Wire Wire Line
+	4700 3700 5800 3700
+Wire Wire Line
+	4700 4050 5350 4050
+Wire Wire Line
+	4700 4400 4900 4400
+Text HLabel 4400 3200 0    60   Input ~ 0
+LAYER
+Text HLabel 4700 3700 0    60   Input ~ 0
+C_R
+Text HLabel 4700 4050 0    60   Input ~ 0
+C_G
+Text HLabel 4700 4400 0    60   Input ~ 0
+C_B
+Text HLabel 6650 4050 2    60   Input ~ 0
+OUT_R
+Text HLabel 6650 4400 2    60   Input ~ 0
+OUT_G
+Text HLabel 6650 4750 2    60   Input ~ 0
+OUT_B
+Wire Wire Line
+	6650 4750 5250 4750
+Wire Wire Line
+	5700 4400 6650 4400
+Wire Wire Line
+	6150 4050 6650 4050
+Wire Wire Line
+	6150 3200 6150 3450
+Connection ~ 5250 3200
+Wire Wire Line
+	5700 3800 5700 3200
+Connection ~ 5700 3200
+Text Notes 8150 7650 0    60   ~ 0
+01/10/18
+$EndSCHEMATC

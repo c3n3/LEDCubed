@@ -59,20 +59,20 @@ void Snow::run(uint32_t time, bool timed)
                 {
                     if (rand() % 25 != 1)
                     {
-                        help::moveRow(j, i, DOWN, 1, true);
+                        help::moveRow(j, i, Relativistic::DOWN, 1, true);
                     }
                     else
                     {
-                        help::moveRow(j, i, DOWN, 1, false);
+                        help::moveRow(j, i, Relativistic::DOWN, 1, false);
                     }
                 }
             }
             int num = rand() % 12;
             int num1 = rand() % 12;
             int num2 = rand() % 12;
-            set_led_pk(num, 11, num2, white);
-            set_led_pk(num1, 11, num, white);
-            set_led_pk(num2, 11, num1, white);
+            set_led_pk(num, 11, num2, 0xFFFF);
+            set_led_pk(num1, 11, num, 0xFFFF);
+            set_led_pk(num2, 11, num1, 0xFFFF);
             timer += 260;
         }
     }

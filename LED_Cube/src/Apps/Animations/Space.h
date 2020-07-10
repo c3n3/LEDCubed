@@ -2,10 +2,11 @@
 #include "../App.h"
 #include "../../../src/LED_Cube_library/Basic_Functions.h"
 #include "../../../src/LED_Cube_library/Helpful_Functions.h"
+#include "../../Tools/RelativeCoordinates/Relativistic.h"
 class Space : public App
 {
 private:
-    directions current;
+    Relativistic::Directions current;
 
     uint32_t interval;
 
@@ -42,9 +43,9 @@ private:
         speedUp ? (interval - (millis() % intervalJump)) : (interval + (millis() % intervalJump));
     };
 
-    directions getNextDirection()
+    Relativistic::Directions getNextDirection()
     {
-        return directions(millis() % 6); // just using millis for random for now
+        return Relativistic::Directions(millis() % 6); // just using millis for random for now
     };
 
 protected:
@@ -89,6 +90,6 @@ public:
         speedUp = true;
         sustain = false; // when will sustain be implimented
         interval = 750; // 750 miliseconds to start the function
-        current = directions(millis() % 6);
+        current = Relativistic::Directions(millis() % 6);
     };
 };

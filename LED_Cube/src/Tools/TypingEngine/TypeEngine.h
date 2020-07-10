@@ -2,6 +2,7 @@
 #define TYPE_ENGINE
 #include "../../LED_Cube_library/globals.h"
 #include "../../LED_Cube_library/types.h"
+#include "../../Tools/RelativeCoordinates/Relativistic.h"
 #include "Arduino.h"
 
 /**
@@ -31,7 +32,7 @@ private:
     static char lowerChars[16];
 
     // this is a helpful function that gets the direction of the next character
-    static directions getDirection(uint8_t);
+    static Relativistic::Directions getDirection(uint8_t);
 
     // this is a basic function that types a character to the cube
     static void type(char, uint8_t, uint16_t, bool);
@@ -59,7 +60,7 @@ public:
     static uint8_t getFontIndex(char c);
 
     // draws a char c at the coordinates in the direction of the viewPoint with the color
-    static void drawChar(char c, int x1, int y1, int z1, directions viewpoint, uint16_t color);
+    static void drawChar(char c, int x1, int y1, int z1, Relativistic::Directions viewpoint, uint16_t color);
 
     // Types chars on the top that scroll across the cubes outside
     static void typeUpper(char c, uint16_t color);

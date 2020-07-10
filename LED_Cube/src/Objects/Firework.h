@@ -50,7 +50,7 @@ public:
     bool fireAway();
 
     // used to 'reload' the firework ie bassically create a new firework object without actually creating a new one
-    void reload(Particle r, uint32_t fuse, Color burstColor, FireWorkEffect f);    
+    void reload(Particle r, uint32_t fuse, Color burstColor, FireWorkEffect f);
 
     /**
      * @brief Construct a new Firework object

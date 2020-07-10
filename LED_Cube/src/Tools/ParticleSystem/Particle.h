@@ -16,8 +16,10 @@ private:
     const float resolution; // (milliseconds per update) for the particle's 'physics' engine
     Color color;
     void thatOnePhysicsEquation();
-    void handleWallHit(float&,float&,float&);
-    uint32_t timeStart;
+    void handleWallHit(float&,float&,float&,uint32_t&,float&);
+    uint32_t timeStartX;
+    uint32_t timeStartY;
+    uint32_t timeStartZ;
     uint32_t timer; // timer for use when 
 public:
     // this is useful so you can reasign a particle
@@ -25,6 +27,9 @@ public:
 
     // the current point of the particle
     Vector point;
+    
+    // the origin of the point
+    Vector origin;
 
     // the initialSpeed in LEDs per second
     Vector velocity; 
@@ -59,7 +64,7 @@ public:
     Particle(Vector point, Vector velocity, Vector acceleration, uint16_t resolution, WallEffects effect, Color color = 0xFFFF);
 
     // this draws the particle with a given color
-    void drawSelf(uint16_t& color);
+    void drawSelf(const uint16_t& color);
 
     // this draws the particle with the internal color
     void drawSelf();

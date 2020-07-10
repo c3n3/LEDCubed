@@ -5,9 +5,6 @@
  * 
  */
 
-// this should really be spit into a RelativeCoord Class but I used it too much like this so I need to not be lazy to do that
-enum directions {UP, FORWARD, LEFT, BACKWARD, RIGHT, DOWN};
-
 // this is the pinicle of laziness 
 typedef uint8_t ui8; // I really hated typing that (esspecially the _t0)
 

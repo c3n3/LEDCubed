@@ -1,65 +1,5 @@
 #include "Helpful_Functions.h"
-//this function switches which orientation you may look at the cube,
-// very very useful function, allows writting other helper functions in terms of a direction so that you dont have to have 6 types of the same function for each direction
-// the  coordinates go as follows, the face you look at for each direction, the reletive 'z' coordinate is the depth from face, the reletive 'x' is the right and left axis across the face, and the second coordinate is always the reletive 'y'
-uint16_t help::directionalCubeArray(const uint8_t &firstCord, const uint8_t &secondCord, const uint8_t &thirdCord, directions direction, bool setLED, uint16_t color)
-{
-    if (setLED)
-    {
-        switch (direction)
-        { //you can set leds
-        case UP:
-            set_led_pk(firstCord, thirdCord, secondCord, color);
-            break;
-        case FORWARD:
-            set_led_pk(firstCord, secondCord, thirdCord, color);
-            break;
-        case LEFT:
-            set_led_pk(11 - thirdCord, secondCord, firstCord, color);
-            break;
-        case BACKWARD:
-            set_led_pk(11 - firstCord, secondCord, 11 - thirdCord, color);
-            break;
-        case RIGHT:
-            set_led_pk(thirdCord, secondCord, 11 - firstCord, color);
-            break;
-        case DOWN:
-            set_led_pk(firstCord, 11 - thirdCord, secondCord, color);
-            break;
-        default:
-            break;
-        }
-        return 0;
-    }
-    else
-    {
-        switch (direction)
-        { //or you can call the array for the cube, it returns the value
-        case UP:
-            return LEDArray(firstCord, thirdCord, secondCord);
-            break;
-        case FORWARD:
-            return LEDArray(firstCord, secondCord, thirdCord);
-            break;
-        case LEFT:
-            return LEDArray(11 - thirdCord, secondCord, firstCord);
-            break;
-        case BACKWARD:
-            return LEDArray(11 - firstCord, secondCord, 11 - thirdCord);
-            break;
-        case RIGHT:
-            return LEDArray(thirdCord, secondCord, 11 - firstCord);
-            break;
-        case DOWN:
-            return LEDArray(firstCord, 11 - thirdCord, secondCord);
-            break;
 
-        default:
-            break;
-        }
-    }
-    return 0; // if people input nonsense, give them arbitrary nonsense
-}
 
 ui8 help::normalize(float& notNormal)
 {
@@ -69,41 +9,6 @@ ui8 help::normalize(float& notNormal)
         normalized = normalized > 200 ? 0 : 11; // that 200 is completely arbitrary, but it should work
     }
     return normalized;
-}
-
-void help::switchToDirectionalCoord(ui8& nonRelativeX, ui8& nonRelativeY, ui8& nonRelativeZ, directions direction)
-{
-    // This is the the flip
-    uint8_t temp;
-    switch (direction)
-    {
-    case UP:
-        temp = nonRelativeY;
-        nonRelativeY = nonRelativeZ;
-        nonRelativeZ = temp;
-        break;
-    case LEFT:
-        temp = nonRelativeX;
-        nonRelativeX = 11 - nonRelativeZ;
-        nonRelativeZ = temp;
-        break;
-    case BACKWARD:
-        nonRelativeX = 11 - nonRelativeX;
-        nonRelativeZ = 11 - nonRelativeZ;
-        break;
-    case RIGHT:
-        temp = nonRelativeX;
-        nonRelativeX = nonRelativeZ;
-        nonRelativeZ = 11 - temp;
-        break;
-    case DOWN:
-        temp = nonRelativeY;
-        nonRelativeY = 11 - nonRelativeZ;
-        nonRelativeZ = temp;
-        break;
-    default:
-        break;
-    }
 }
 
 /***************************************************************************
@@ -119,31 +24,31 @@ void help::switchToDirectionalCoord(ui8& nonRelativeX, ui8& nonRelativeY, ui8& n
  *
  ***************************************************************************/
 
-void help::moveRow(uint8_t firstCoord, uint8_t secondCoord, directions viewPoint, uint16_t specificColor, boolean collective, uint8_t start, uint8_t end, uint16_t color)
+void help::moveRow(uint8_t firstCoord, uint8_t secondCoord, Relativistic::Directions viewPoint, uint16_t specificColor, boolean collective, uint8_t start, uint8_t end, uint16_t color)
 {
     if (!collective && end == 11)
     {
-        directionalCubeArray(firstCoord, secondCoord, 11, viewPoint, true);
+        Relativistic::directionalCubeArray(firstCoord, secondCoord, 11, viewPoint, true);
     }
     for (int i = 10 - (11 - end); i >= 0 + start; i--)
     {
         if (specificColor == 1)
         {
-            if (directionalCubeArray(firstCoord, secondCoord, i, viewPoint) != 0)
+            if (Relativistic::directionalCubeArray(firstCoord, secondCoord, i, viewPoint) != 0)
             {
                 if (collective)
                 {
-                    if (directionalCubeArray(firstCoord, secondCoord, i + 1, viewPoint) == 0)
+                    if (Relativistic::directionalCubeArray(firstCoord, secondCoord, i + 1, viewPoint) == 0)
                     {
                         if (color == 1)
                         {
-                            directionalCubeArray(firstCoord, secondCoord, i + 1, viewPoint, true, directionalCubeArray(firstCoord, secondCoord, i, viewPoint));
+                            Relativistic::directionalCubeArray(firstCoord, secondCoord, i + 1, viewPoint, true, Relativistic::directionalCubeArray(firstCoord, secondCoord, i, viewPoint));
                         }
                         else
                         {
-                            directionalCubeArray(firstCoord, secondCoord, i, viewPoint, true, color);
+                            Relativistic::directionalCubeArray(firstCoord, secondCoord, i, viewPoint, true, color);
                         }
-                        directionalCubeArray(firstCoord, secondCoord, i, viewPoint, true);
+                        Relativistic::directionalCubeArray(firstCoord, secondCoord, i, viewPoint, true);
                     }
                 }
                 else
@@ -151,33 +56,33 @@ void help::moveRow(uint8_t firstCoord, uint8_t secondCoord, directions viewPoint
 
                     if (color == 1)
                     {
-                        directionalCubeArray(firstCoord, secondCoord, i + 1, viewPoint, true, directionalCubeArray(firstCoord, secondCoord, i, viewPoint));
+                        Relativistic::directionalCubeArray(firstCoord, secondCoord, i + 1, viewPoint, true, Relativistic::directionalCubeArray(firstCoord, secondCoord, i, viewPoint));
                     }
                     else
                     {
-                        directionalCubeArray(firstCoord, secondCoord, i + 1, viewPoint, true, color);
+                        Relativistic::directionalCubeArray(firstCoord, secondCoord, i + 1, viewPoint, true, color);
                     }
-                    directionalCubeArray(firstCoord, secondCoord, i, viewPoint, true);
+                    Relativistic::directionalCubeArray(firstCoord, secondCoord, i, viewPoint, true);
                 }
             }
         }
         else
         {
-            if (directionalCubeArray(firstCoord, secondCoord, i, viewPoint) != 0 && directionalCubeArray(firstCoord, secondCoord, i, viewPoint) == specificColor)
+            if (Relativistic::directionalCubeArray(firstCoord, secondCoord, i, viewPoint) != 0 && Relativistic::directionalCubeArray(firstCoord, secondCoord, i, viewPoint) == specificColor)
             {
                 if (collective)
                 {
-                    if (directionalCubeArray(firstCoord, secondCoord, i + 1, viewPoint) != specificColor)
+                    if (Relativistic::directionalCubeArray(firstCoord, secondCoord, i + 1, viewPoint) != specificColor)
                     {
                         if (color == 1)
                         {
-                            directionalCubeArray(firstCoord, secondCoord, i + 1, viewPoint, true, directionalCubeArray(firstCoord, secondCoord, i, viewPoint, false));
+                            Relativistic::directionalCubeArray(firstCoord, secondCoord, i + 1, viewPoint, true, Relativistic::directionalCubeArray(firstCoord, secondCoord, i, viewPoint, false));
                         }
                         else
                         {
-                            directionalCubeArray(firstCoord, secondCoord, i, viewPoint, true, color);
+                            Relativistic::directionalCubeArray(firstCoord, secondCoord, i, viewPoint, true, color);
                         }
-                        directionalCubeArray(firstCoord, secondCoord, i, viewPoint, true);
+                        Relativistic::directionalCubeArray(firstCoord, secondCoord, i, viewPoint, true);
                     }
                 }
                 else
@@ -185,13 +90,13 @@ void help::moveRow(uint8_t firstCoord, uint8_t secondCoord, directions viewPoint
 
                     if (color == 1)
                     {
-                        directionalCubeArray(firstCoord, secondCoord, i + 1, viewPoint, true, directionalCubeArray(firstCoord, secondCoord, i, viewPoint));
+                        Relativistic::directionalCubeArray(firstCoord, secondCoord, i + 1, viewPoint, true, Relativistic::directionalCubeArray(firstCoord, secondCoord, i, viewPoint));
                     }
                     else
                     {
-                        directionalCubeArray(firstCoord, secondCoord, i + 1, viewPoint, true, color);
+                        Relativistic::directionalCubeArray(firstCoord, secondCoord, i + 1, viewPoint, true, color);
                     }
-                    directionalCubeArray(firstCoord, secondCoord, i, viewPoint, true);
+                    Relativistic::directionalCubeArray(firstCoord, secondCoord, i, viewPoint, true);
                 }
             }
         }
@@ -217,19 +122,19 @@ void help::eradicate(uint16_t color)
 }
 
 //TODO: delete this thing if safe
-void help::setRandomLED(uint8_t leds, directions direction, uint16_t color, boolean threeD)
+void help::setRandomLED(uint8_t leds, Relativistic::Directions direction, uint16_t color, boolean threeD)
 {
     if (!threeD)
     {
         for (uint8_t i = 0; i < leds; i++)
         {
-            directionalCubeArray(rand() % 12, rand() % 12, 0, direction, true, color);
+            Relativistic::directionalCubeArray(rand() % 12, rand() % 12, 0, direction, true, color);
         }
     }
 }
 
 //no up or down yet
-void help::angledMove(uint8_t rise, uint8_t run, directions direction, uint16_t color)
+void help::angledMove(uint8_t rise, uint8_t run, Relativistic::Directions direction, uint16_t color)
 {
     //rise
     for (uint8_t k = 0; k < rise; k++)
@@ -238,7 +143,7 @@ void help::angledMove(uint8_t rise, uint8_t run, directions direction, uint16_t 
         {
             for (uint8_t j = 0; j < 12; j++)
             {
-                moveRow(i, j, UP, color);
+                moveRow(i, j, Relativistic::UP, color);
             }
         }
     }

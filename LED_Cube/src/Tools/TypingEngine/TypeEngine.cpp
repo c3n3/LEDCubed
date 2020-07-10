@@ -42,24 +42,24 @@ void TypeEngine::resetCharCountUpper() {
 }
 
 //gets direction based on char positions (four letters per side of cube)
-directions TypeEngine::getDirection(uint8_t charPosition) {
+Relativistic::Directions TypeEngine::getDirection(uint8_t charPosition) {
     if (charPosition < charsPerSide) {
-        return FORWARD;
+        return Relativistic::FORWARD;
     }
     if (charPosition < charsPerSide * 2) {
-        return LEFT;
+        return Relativistic::LEFT;
     }
     if (charPosition < charsPerSide * 3) {
-        return BACKWARD;
+        return Relativistic::BACKWARD;
     }
     if (charPosition < charsPerSide * 4) {
-        return RIGHT;
+        return Relativistic::RIGHT;
     }
     return (getDirection(charPosition - charsPerSide * 4)); // just loop back recursively for ease; Should never happen though
 }
 
 // draws a char c at the coordinates in the direction of the viewPoint with the color
-void TypeEngine::drawChar(char c, int x1, int y1, int z1, directions viewpoint, uint16_t color)
+void TypeEngine::drawChar(char c, int x1, int y1, int z1, Relativistic::Directions viewpoint, uint16_t color)
 {
     uint16_t letter = font[getFontIndex(c)];
     for (int i = 0; i < 3; i++)
@@ -69,7 +69,7 @@ void TypeEngine::drawChar(char c, int x1, int y1, int z1, directions viewpoint, 
             bool on = letter & 0x8000; // get the last bit
             letter = letter << 1;      // shift to the left to get the next bit
             // if (font[getFontIndex(c)][i * 5 + j])
-            help::directionalCubeArray(x1 + i, y1 + j, z1, viewpoint, true, on ? color : 0x0000);
+            Relativistic::directionalCubeArray(x1 + i, y1 + j, z1, viewpoint, true, on ? color : 0x0000);
         }
     }
 }
@@ -128,7 +128,7 @@ void TypeEngine::autoTypeLower(String str, uint16_t color1, uint16_t color2, boo
 
 void TypeEngine::type(char c, uint8_t position, uint16_t color, bool lower)
 {
-    directions direction = getDirection(position);
+    Relativistic::Directions direction = getDirection(position);
     uint8_t x = (position % 4) * charWidth;
     uint8_t y = lower == true ? lowerHeight : upperHeight;
     drawChar(c, x, y, 0, direction, color);
@@ -140,78 +140,40 @@ char TypeEngine::lowerChars[16] = {0};
 
 // this is a font listed in bits
 uint16_t TypeEngine::font[37] = {
-    //A
-    0b1111000101111100,
-    //B
-    0b1111110101010100,
-    //C
-    0b0111010001100010,
-    //D
-    0b1111110001011100,
-    //E
-    0b1111110101100010,
-    //F
-    0b1111100101000010,
-    //G
-    0b0111010001011000,
-    //H
-    0b1111100100111110,
-    //I
-    0b1000111111100010,
-    //J
-    0b0100010000011110,
-    //k
-    0b1111101110100010,
-    //L
-    0b1111110000100000,
-    //M
-    0b1111100110111110,
-    //N
-    0b1111101110111110,
-    //O
-    0b0111010001011100,
-    //P
-    0b1111100101000100,
-    //Q
-    0b0111011001101100,
-    //R
-    0b1111100101110100,
-    //S
-    0b1001010101010010,
-    //T
-    0b0000111111000010,
-    //U
-    0b0111110000011110,
-    //V
-    0b0011110000001110,
-    //W
-    0b1111101100111110,
-    //X
-    0b1101100100110110,
-    //Y
-    0b0001111100000110,
-    //Z
-    0b1100110101100110,
-    //1
-    0b1001011111100000,
-    //2
-    0b1100110101100110,
-    //3
-    0b1010110101011100,
-    //4
-    0b0011100100111110,
-    //5
-    0b1001110101010010,
-    //6
-    0b0111010101010000,
-    //7
-    0b0000100001111110,
-    //8
-    0b1101110101110110,
-    //9
-    0b0001100101111110,
-    //0,
-    0b1111110001111110,
-    //
-    0b0000000000000000,
+        0b0101011111011010, // this is a
+        0b1101011101011100, // this is b
+        0b0111001001000110, // this is c
+        0b1101011011011100, // this is d
+        0b1111001101001110, // this is e
+        0b1111001101001000, // this is f
+        0b0101001011010100, // this is g
+        0b1011011111011010, // this is h
+        0b1110100100101110, // this is i
+        0b0010010011010100, // this is j
+        0b1011101101101010, // this is k
+        0b1001001001001110, // this is l
+        0b1011111111011010, // this is m
+        0b1011111111111010, // this is n
+        0b0101011011010100, // this is o
+        0b1101011101001000, // this is p
+        0b0101011011100110, // this is q
+        0b1101011101011010, // this is r
+        0b0111000100011100, // this is s
+        0b1110100100100100, // this is t
+        0b1011011011010100, // this is u
+        0b1011011010000100, // this is v
+        0b1011011111111010, // this is w
+        0b1011010101011010, // this is x
+        0b1011010100100100, // this is y
+        0b1110010101001110, // this is z
+        0b1110010101001110, // this is 1
+        0b1100011110011100, // this is 2
+        0b1011011110010010, // this is 3
+        0b1111000100011100, // this is 4
+        0b0101001101010100, // this is 5
+        0b1110010010010010, // this is 6
+        0b1111010101011110, // this is 7
+        0b1111010110010010, // this is 8
+        0b1111011011011110, // this is 9
+        0b0000000000000000, // this is
 };

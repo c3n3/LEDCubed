@@ -67,9 +67,7 @@ uint16_t LEDArray(uint8_t x, uint8_t y, uint8_t z){
     if (!(z > 11 || x > 11|| y > 11)) {
     return px_buf[ z * NUM_LEDS_LYR + NUM_LEDS_DIM * x + y];
     }
-    else {
-        return 0;
-    }
+    return 0;
 }
 
 //Set led with packed color value

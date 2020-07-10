@@ -28,18 +28,22 @@ bool Firework::runRocket() {
         effectStage = true;    
         timer = millis() - effect.intervalTime; // set timer so it resets, but also runs effect instantly
     } else {
+        rocket.drawSelf(0);
         rocket.updatePosition(); // always update rocket until the fuse blows
         rocket.drawSelf();
     }
 }
 
 bool Firework::runEffect() {
-    if (millis() - timer > effect.intervalTime) {
+    if (millis() - timer > effect.intervalTime && interval != effect.maxIntevals) {
         (*effect.drawEffect)(rocket.point.x, rocket.point.y, rocket.point.z, color, interval); 
         interval++;
         timer = millis();
+        return true;
     }
-    return interval == effect.maxIntevals;
+    Color o = Color(0);
+    (*effect.drawEffect)(rocket.point.x, rocket.point.y, rocket.point.z, o, interval - 1); 
+    return false;
 }
 
 bool Firework::fireAway() {

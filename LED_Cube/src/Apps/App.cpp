@@ -3,7 +3,6 @@
 void App::init() {}
 void App::end() {}
 
-
 bool App::characterInput()
 {
     c = 0; // resets the character every frame

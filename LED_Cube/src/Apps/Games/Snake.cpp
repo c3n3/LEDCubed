@@ -129,7 +129,7 @@ void Snake::run(uint32_t time, bool timed)
     uint8_t z2 = 6;
     uint16_t speed = 500;
     uint16_t length = 4;
-    directions direction = FORWARD;
+    Relativistic::Directions direction = Relativistic::FORWARD;
     uint32_t foodTimer = millis();
     uint32_t moveTimer = millis();
     boolean addLength = false;
@@ -150,27 +150,27 @@ void Snake::run(uint32_t time, bool timed)
             }
 
             // so that the snake cannot eat itself prevent motion in the reverse direction
-            if (c == PS2_LEFTARROW && direction == RIGHT)
+            if (c == PS2_LEFTARROW && direction == Relativistic::RIGHT)
             {
                 c = ']';
             }
-            else if (c == PS2_RIGHTARROW && direction == LEFT)
+            else if (c == PS2_RIGHTARROW && direction == Relativistic::LEFT)
             {
                 c = ']';
             }
-            else if (c == PS2_DOWNARROW && direction == FORWARD)
+            else if (c == PS2_DOWNARROW && direction == Relativistic::FORWARD)
             {
                 c = ']';
             }
-            else if (c == PS2_UPARROW && direction == BACKWARD)
+            else if (c == PS2_UPARROW && direction == Relativistic::BACKWARD)
             {
                 c = ']';
             }
-            else if ((c == '1' || c == 'r') && direction == DOWN)
+            else if ((c == '1' || c == 'r') && direction == Relativistic::DOWN)
             {
                 c = ']';
             }
-            else if ((c == '0' || c == 'f') && direction == UP)
+            else if ((c == '0' || c == 'f') && direction == Relativistic::UP)
             {
                 c = ']';
             }
@@ -224,28 +224,28 @@ void Snake::run(uint32_t time, bool timed)
         switch (c)
         {
         case PS2_LEFTARROW:
-            direction = LEFT;
+            direction = Relativistic::LEFT;
             break;
         case PS2_RIGHTARROW:
-            direction = RIGHT;
+            direction = Relativistic::RIGHT;
             break;
         case '0':
-            direction = DOWN;
+            direction = Relativistic::DOWN;
             break;
         case 'f':
-            direction = DOWN;
+            direction = Relativistic::DOWN;
             break;
         case 'r':
-            direction = UP;
+            direction = Relativistic::UP;
             break;
         case '1':
-            direction = UP;
+            direction = Relativistic::UP;
             break;
         case PS2_DOWNARROW:
-            direction = BACKWARD;
+            direction = Relativistic::BACKWARD;
             break;
         case PS2_UPARROW:
-            direction = FORWARD;
+            direction = Relativistic::FORWARD;
             break;
         default:
             break;
@@ -266,22 +266,22 @@ void Snake::run(uint32_t time, bool timed)
             {
                 switch (direction)
                 {
-                case FORWARD:
+                case Relativistic::FORWARD:
                     z++;
                     break;
-                case BACKWARD:
+                case Relativistic::BACKWARD:
                     z--;
                     break;
-                case UP:
+                case Relativistic::UP:
                     y++;
                     break;
-                case DOWN:
+                case Relativistic::DOWN:
                     y--;
                     break;
-                case LEFT:
+                case Relativistic::LEFT:
                     x--;
                     break;
-                case RIGHT:
+                case Relativistic::RIGHT:
                     x++;
                     break;
 

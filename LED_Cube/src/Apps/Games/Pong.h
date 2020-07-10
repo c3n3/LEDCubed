@@ -3,6 +3,7 @@
 #include "../../../src/LED_Cube_library/Helpful_Functions.h"
 #include "../App.h"
 #include "../../Tools/TypingEngine/TypeEngine.h"
+#include "../../Tools/RelativeCoordinates/Relativistic.h"
 class Pong : public App
 {
 private:
@@ -51,8 +52,8 @@ public:
     void drawPaddle(const bool& clear = false);
     bool deservesFailure(ui8 x, ui8 y, ui8 z);
     void reset();
-    const directions wall;
+    const Relativistic::Directions wall;
     ui8 lives; // because we count down score we have 'lives'
     void keyboardInput(char &c);
-    Player(char, char, char, char, directions, const ui8);
+    Player(char, char, char, char, Relativistic::Directions, const ui8);
 };

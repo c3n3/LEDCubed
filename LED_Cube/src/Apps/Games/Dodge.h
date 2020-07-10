@@ -64,8 +64,8 @@ void Dodge::run(uint32_t time, bool timed)
         {
             for (int i = 0; i < 12; i++)
             {
-                help::moveRow(i, 1, UP, 0xF00, true);
-                help::moveRow(i, 2, UP, 0xF00, true);
+                help::moveRow(i, 1, Relativistic::UP, 0xF00, true);
+                help::moveRow(i, 2, Relativistic::UP, 0xF00, true);
                 c = '\0';
             }
         }
@@ -73,8 +73,8 @@ void Dodge::run(uint32_t time, bool timed)
         {
             for (int i = 0; i < 12; i++)
             {
-                help::moveRow(i, 1, DOWN, 0xF00, true);
-                help::moveRow(i, 2, DOWN, 0xF00, true);
+                help::moveRow(i, 1, Relativistic::DOWN, 0xF00, true);
+                help::moveRow(i, 2, Relativistic::DOWN, 0xF00, true);
                 c = '\0';
             }
         }
@@ -82,8 +82,8 @@ void Dodge::run(uint32_t time, bool timed)
         {
             for (int i = 0; i < 12; i++)
             {
-                help::moveRow(1, i, LEFT, 0xF00, true);
-                help::moveRow(2, i, LEFT, 0xF00, true);
+                help::moveRow(1, i, Relativistic::LEFT, 0xF00, true);
+                help::moveRow(2, i, Relativistic::LEFT, 0xF00, true);
                 c = '\0';
             }
         }
@@ -92,8 +92,8 @@ void Dodge::run(uint32_t time, bool timed)
             for (int i = 0; i < 12; i++)
             {
 
-                help::moveRow(10, i, RIGHT, 0xF00, true);
-                help::moveRow(9, i, RIGHT, 0xF00, true);
+                help::moveRow(10, i, Relativistic::RIGHT, 0xF00, true);
+                help::moveRow(9, i, Relativistic::RIGHT, 0xF00, true);
                 c = '\0';
             }
         }
@@ -103,14 +103,14 @@ void Dodge::run(uint32_t time, bool timed)
             if (millis() - timer0 > delayTime)
             {
                 Serial.print(ledCount);
-                help::setRandomLED(ledCount, BACKWARD, 0xFFF);
+                help::setRandomLED(ledCount, Relativistic::BACKWARD, 0xFFF);
 
                 for (int i = 0; i < 12; i++)
                 {
                     for (int j = 0; j < 12; j++)
                     {
 
-                        help::moveRow(i, j, BACKWARD, 0xFFF);
+                        help::moveRow(i, j, Relativistic::BACKWARD, 0xFFF);
                     }
                 }
                 timer0 += delayTime;
@@ -118,7 +118,7 @@ void Dodge::run(uint32_t time, bool timed)
         }
         else if (key != 7)
         {
-            help::setRandomLED(ledCount, BACKWARD, 0xFFF);
+            help::setRandomLED(ledCount, Relativistic::BACKWARD, 0xFFF);
             key = 7;
         }
     }

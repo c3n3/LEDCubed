@@ -2,6 +2,7 @@
 #define SWIRL
 #include "../../../src/LED_Cube_library/Basic_Functions.h"
 #include "../../../src/LED_Cube_library/Helpful_Functions.h"
+#include "../../../src/Tools/RelativeCoordinates/Relativistic.h"
 #include "../App.h"
 class Swirl: public App
 {
@@ -33,17 +34,17 @@ void Swirl::run(uint32_t time, bool timed)
         {
             for (int i = 0; i < 12; i++)
             {
-                help::directionalCubeArray(i, i, 11, FORWARD, true, 0xF000);
-                help::directionalCubeArray(i, i, 11, BACKWARD, true, 0xFF00);
-                help::directionalCubeArray(i, i, 11, LEFT, true, 0xFFFF);
-                help::directionalCubeArray(i, i, 11, RIGHT, true, 0xF00F);
+                Relativistic::setLED(i, i, 11, Relativistic::FORWARD, 0xF000);
+                Relativistic::setLED(i, i, 11, Relativistic::BACKWARD, 0xFF00);
+                Relativistic::setLED(i, i, 11, Relativistic::LEFT, 0xFFFF);
+                Relativistic::setLED(i, i, 11, Relativistic::RIGHT, 0xF00F);
             }
             for (int i = 1; i < 11; i++)
             {
-                help::directionalCubeArray(i, 11 - i, 10, FORWARD, true, 0xF800);
-                help::directionalCubeArray(i, 11 - i, 10, BACKWARD, true, 0x0770);
-                help::directionalCubeArray(i, 11 - i, 10, LEFT, true, 0x00EF);
-                help::directionalCubeArray(i, 11 - i, 10, RIGHT, true, 0xF00F);
+                Relativistic::setLED(i, 11 - i, 10, Relativistic::FORWARD, 0xF800);
+                Relativistic::setLED(i, 11 - i, 10, Relativistic::BACKWARD, 0x0770);
+                Relativistic::setLED(i, 11 - i, 10, Relativistic::LEFT, 0x00EF);
+                Relativistic::setLED(i, 11 - i, 10, Relativistic::RIGHT, 0xF00F);
             }
             start = true;
         }
@@ -51,16 +52,16 @@ void Swirl::run(uint32_t time, bool timed)
         {
             for (int k = 0; k < 12; k++)
             {
-                help::moveRow(11, k, FORWARD);
-                help::moveRow(11, k, BACKWARD);
-                help::moveRow(11, k, LEFT);
-                help::moveRow(11, k, RIGHT);
+                help::moveRow(11, k, Relativistic::FORWARD);
+                help::moveRow(11, k, Relativistic::BACKWARD);
+                help::moveRow(11, k, Relativistic::LEFT);
+                help::moveRow(11, k, Relativistic::RIGHT);
             }
             for (int i = 0; i < 4; i++)
             {
                 for (int k = 1; k < 11; k++)
                 {
-                    help::moveRow(1, k, directions(i + 1), 1, false, 1, 10);
+                    help::moveRow(1, k, Relativistic::Directions(i + 1), 1, false, 1, 10);
                 }
             }
 

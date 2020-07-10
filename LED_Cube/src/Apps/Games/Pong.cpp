@@ -115,8 +115,8 @@ void Pong::run(uint32_t time, bool timed)
     const uint16_t ballMoveInterval = 200; // ball movement delays
     // note the use of NEW here
     players = new Player *[2];
-    players[0] = new Player(';', '\'', '[', '/', LEFT, startScore); // just 2 players for now
-    players[1] = new Player('s', 'a', 'w', 'z', RIGHT, startScore);
+    players[0] = new Player(';', '\'', '[', '/', Relativistic::LEFT, startScore); // just 2 players for now
+    players[1] = new Player('s', 'a', 'w', 'z', Relativistic::RIGHT, startScore);
 
     State state = Start;
     while (!timed || millis() - timer < timed)
@@ -168,7 +168,7 @@ void Pong::run(uint32_t time, bool timed)
 // -------------------------------------------------- Player Below -----------------------------------------------------
 //-----------------------------------------------------------------------------------------------------------------------
 
-Pong::Player::Player(char iup, char idown, char ileft, char iright, directions iwall, ui8 startScore)
+Pong::Player::Player(char iup, char idown, char ileft, char iright, Relativistic::Directions iwall, ui8 startScore)
     : upChar(iup), downChar(idown), leftChar(ileft), rightChar(iright), wall(iwall)
 {
     lives = startScore;
@@ -181,7 +181,7 @@ bool Pong::Player::deservesFailure(ui8 ballX, ui8 ballY, ui8 ballZ)
     { // if your already dead, you cant desearve failure
         return false;
     }
-    help::switchToDirectionalCoord(ballX, ballY, ballZ, wall); // flip the coordinates
+    Relativistic::toRelative(ballX, ballY, ballZ, wall); // flip the coordinates
     const ui8 length = 11 - maxX;
     const ui8 height = 11 - maxY;
     return (!(ballX >= x && ballX <= x + length - 1) || !(ballY >= y && ballY <= y + height - 1)) && (ballZ == 0);
@@ -205,13 +205,13 @@ void Pong::Player::drawPaddle(const bool &clear)
 
     for (int i = x; i < x + length; i++)
     {
-        help::directionalCubeArray(i, y, 0, wall, true, clear == false ? color : 0);
-        help::directionalCubeArray(i, y + height - 1, 0, wall, true, clear == false ? color : 0);
+        Relativistic::directionalCubeArray(i, y, 0, wall, true, clear == false ? color : 0);
+        Relativistic::directionalCubeArray(i, y + height - 1, 0, wall, true, clear == false ? color : 0);
     }
     for (int i = y; i < y + height; i++)
     {
-        help::directionalCubeArray(x, i, 0, wall, true, clear == false ? color : 0);
-        help::directionalCubeArray(x + length - 1, i, 0, wall, true, clear == false ? color : 0);
+        Relativistic::directionalCubeArray(x, i, 0, wall, true, clear == false ? color : 0);
+        Relativistic::directionalCubeArray(x + length - 1, i, 0, wall, true, clear == false ? color : 0);
     }
 }
 

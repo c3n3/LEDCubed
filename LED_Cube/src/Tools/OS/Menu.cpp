@@ -39,8 +39,8 @@ void Menu::run()
             {
                 (*apps[current]).run();
             }
-            TypeEngine::drawChar(current + '0', 5, 5, 0, FORWARD, white);
-            TypeEngine::drawChar(current + '0', 6, 5, 1, FORWARD, white);
+            TypeEngine::drawChar(current + '0', 5, 5, 0, Relativistic::FORWARD, 0xFFFF);
+            TypeEngine::drawChar(current + '0', 6, 5, 1, Relativistic::FORWARD, 0xFFFF);
             TypeEngine::autoTypeLower((*apps[current]).title, 0x001F, 0xFFE0, true);
             c = '\0';
         }
