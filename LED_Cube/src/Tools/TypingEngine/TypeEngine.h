@@ -71,8 +71,14 @@ public:
     // types a string across the top of the cube with alternating colors
     static void autoTypeUpper(String str, uint16_t col1, uint16_t col2, bool clear = true);
 
+    // type a char * like above
+    static void autoTypeUpper(const char* str, uint16_t color1, uint16_t color2, bool clear = true);
+
     // types a string across the bottom of the cube with alternation colors
     static void autoTypeLower(String str, uint16_t col1, uint16_t col2, bool clear = true);
+
+    // type a char * just like above
+    static void autoTypeLower(const char * str, uint16_t col1, uint16_t col2, bool clear = true);
 
     // gets the upper char count
     static uint8_t getUpperCharCount();

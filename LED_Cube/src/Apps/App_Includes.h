@@ -10,4 +10,5 @@
 #include "./Animations/Space.h"
 #include "./Animations/Wave.h"
 #include "./Experimental/RandomParticle.h"
+#include "./Games/Minesweeper.h"
 #endif

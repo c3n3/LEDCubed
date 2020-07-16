@@ -7,8 +7,9 @@ private:
     SinLookUpTable<ui8, 12> sine;
     ui8 iteration;
 public:
-    void init() {
+    bool init() {
         iteration = 0;
+        return CONTINUE_PROGRAM;
     }
     bool frame() {
         for (int i = 0; i < 12; i++) {

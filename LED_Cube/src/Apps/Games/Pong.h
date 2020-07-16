@@ -16,8 +16,6 @@ private:
     };
     const ui8 startScore = 5; // we play bassically like golf so that maybe......... we could have four pong players at once
     const int scoreDisplayTime = 1500;
-    class Player;
-    Player** players;
     float x, y, z;             // this is all relative points
     float zStep, yStep, xStep; // bassically like rise and run, but 3D style
     void drawBall(bool draw = true);
@@ -28,6 +26,8 @@ private:
     void startRound();
     bool ballAtWall();
 public:
+    class Player;
+    Player** players;
     // decided to overide the run function for this one
     void run(uint32_t time = 0, bool timed = false);
     String title = "Pong";

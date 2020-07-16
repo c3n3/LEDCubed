@@ -51,11 +51,11 @@ public:
     void setColor(uint16_t cin);
 
     // gets the real values of the colors ie the bits that represent the colors in increments of 1
-    uint16_t rReal();
+    ui8 rReal();
     // gets the real values of the colors ie the bits that represent the colors in increments of 1
-    uint16_t gReal();
+    ui8 gReal();
     // gets the real values of the colors ie the bits that represent the colors in increments of 1
-    uint16_t bReal();
+    ui8 bReal();
 
     // used to set the r g b values of the Color on a 255 - 0 scale
     ui8 r(uint16_t cIn);

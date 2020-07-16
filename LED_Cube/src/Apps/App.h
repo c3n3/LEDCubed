@@ -26,7 +26,7 @@ protected:
     virtual bool frame();
 
     // called before the frame loop
-    virtual void init();
+    virtual bool init();
 
     // called after the frame loop
     virtual void end();

@@ -1,6 +1,6 @@
 #include "App.h"
 
-void App::init() {}
+bool App::init() {return CONTINUE_PROGRAM;}
 void App::end() {}
 
 bool App::characterInput()
@@ -22,7 +22,9 @@ void App::run(uint32_t time, bool timed)
 {
     uint32_t appTimer = millis();
     timer = millis();
-    init(); // init the function
+    if (init() == STOP_PROGRAM) {  // init the function
+        return;
+    }
     // This may look confusing, but the magic is in the characterInput() and frame() function calls
     // this loop will continueously check the conditions until one is false
     // The way this loop ends is either the characterInput() function takes in an ESC character, or YOUR frame program returns STOP_PROGRAM

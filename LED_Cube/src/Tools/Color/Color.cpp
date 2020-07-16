@@ -67,15 +67,15 @@ void Color::setColor(uint16_t cin)
 }
 
 // gets the real values of the colors ie the bits that represent the colors in increments of 1
-uint16_t Color::rReal()
+ui8 Color::rReal()
 {
     return (color & 0xF800) >> 11;
 }
-uint16_t Color::gReal()
+ui8 Color::gReal()
 {
     return (color & 0x07E0) >> 5;
 }
-uint16_t Color::bReal()
+ui8 Color::bReal()
 {
     return (color & 0x001F);
 }

@@ -70,12 +70,14 @@ void setup()
 void loop()
 {
     // dont forget this when adding apps
-    const uint8_t appElements = 8;
+    const uint8_t appElements = 9;
     const uint8_t screenSaverElements = 5;
 
     // in regards to the use of new, we do not need to worry about leaking memory because this will last till the thing is turned off.
     // Could possibly optimise memory by not allocating all apps at once, but will need a new mechinism
-    App* stuff[appElements] = {new Snake(), new Dodge(), new Pong(), new Snow(), new Swirl(), new Space(), new Swirl(), new RandomParticles()};
+    App* stuff[appElements] = {
+        new Snake(), new Dodge(), new Pong(), new Snow(), new Swirl(), new Space(), new Swirl(), new RandomParticles(), new Minesweeper()
+    };
     App* screenSaver[screenSaverElements] = {stuff[3], stuff[4], stuff[5], stuff[6], stuff[7]};
 
     // creation of the menu application 

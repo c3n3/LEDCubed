@@ -4,6 +4,7 @@
  * @brief This is a vector object. it is in rectangular form just
  * 
  */
+template<typename T>
 struct Vector
 {
     /**
@@ -19,19 +20,22 @@ struct Vector
      * @param y coord
      * @param z coord
      */
-    Vector(float x, float y, float z);
+    Vector(T x, T y, T z);
 
     /**
      * @brief Construct a new Vector object (copy constructor)
      * 
      * @param other this is another vector
      */
-    Vector(const Vector &other);
+    Vector(const Vector<T> &other);
 
     // sets the value of the vector
-    void set(float x, float y, float z);
+    void set(T x, T y, T z);
+
+    // add two together
+    void add(const Vector<T> other);
 
     // this has to be self explainatory
-    float x, y, z;
+    T x, y, z;
 };
 

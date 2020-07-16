@@ -55,7 +55,7 @@ void Particle::drawSelf() {
     protected_set_led_pk(help::normalize(point.x), help::normalize(point.y), help::normalize(point.z), color);
 }
     
-Particle::Particle(Vector p, Vector v, Vector a, uint16_t r, WallEffects e, Color c): resolution(r), color(c) {
+Particle::Particle(Vector<float> p, Vector<float> v, Vector<float> a, uint16_t r, WallEffects e, Color c): resolution(r), color(c) {
     point = p; 
     velocity = v;
     acceleration = a;

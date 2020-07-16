@@ -7,7 +7,6 @@ uint8_t TypeEngine::lowerCharCount = 0;
 uint8_t TypeEngine::lowerHeight = 0;
 uint8_t TypeEngine::upperHeight = 6;
 
-
 uint8_t TypeEngine::getFontIndex(char c)
 {
     if (c < 58 && c > 47)
@@ -116,6 +115,16 @@ void TypeEngine::autoTypeUpper(String str, uint16_t color1, uint16_t color2, boo
         typeUpper(str.charAt(i), i % 2 == 0 ? color1 : color2);
     }
 }
+void TypeEngine::autoTypeUpper(const char* str, uint16_t color1, uint16_t color2, bool clear) {
+    if (clear) {
+        clearLayer(false);
+        upperCharCount = 0;
+    }
+    for (ui8 i = 0; str[i]; i++) {
+        typeUpper(str[i], i % 2 == 0 ? color1 : color2);
+    }
+}
+
 void TypeEngine::autoTypeLower(String str, uint16_t color1, uint16_t color2, bool clear) {
     if (clear) {
         clearLayer(true);
@@ -123,6 +132,16 @@ void TypeEngine::autoTypeLower(String str, uint16_t color1, uint16_t color2, boo
     }
     for (ui8 i = 0; i < str.length(); i++) {
         typeLower(str.charAt(i), i % 2 == 0 ? color1 : color2);
+    }
+}
+
+void TypeEngine::autoTypeLower(const char * str, uint16_t color1, uint16_t color2, bool clear) {
+    if (clear) {
+        clearLayer(true);
+        lowerCharCount = 0;
+    }
+    for (ui8 i = 0; str[i]; i++) {
+        typeLower(str[i], i % 2 == 0 ? color1 : color2);
     }
 }
 

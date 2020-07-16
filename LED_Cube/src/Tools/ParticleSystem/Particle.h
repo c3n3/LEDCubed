@@ -26,16 +26,16 @@ public:
     Particle& operator = (const Particle&);
 
     // the current point of the particle
-    Vector point;
+    Vector<float> point;
     
     // the origin of the point
-    Vector origin;
+    Vector<float> origin;
 
     // the initialSpeed in LEDs per second
-    Vector velocity; 
+    Vector<float> velocity; 
     
     // LEDs per second per second
-    Vector acceleration;
+    Vector<float> acceleration;
     
     // A useful enum for defining what happens when the particle reaches a wall
     enum WallEffects {
@@ -61,7 +61,7 @@ public:
      * @param effect the WallEffect that determines what happens when the particle hits a wall
      * @param color the color of the particle 
      */
-    Particle(Vector point, Vector velocity, Vector acceleration, uint16_t resolution, WallEffects effect, Color color = 0xFFFF);
+    Particle(Vector<float> point, Vector<float> velocity, Vector<float> acceleration, uint16_t resolution, WallEffects effect, Color color = 0xFFFF);
 
     // this draws the particle with a given color
     void drawSelf(const uint16_t& color);
