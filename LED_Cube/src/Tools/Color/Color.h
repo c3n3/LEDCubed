@@ -12,6 +12,8 @@ struct Color
 public:
     uint16_t color;
     
+    static const uint16_t white = 0xFFFF;
+
     /**
      * @brief Construct a new Color object
      * 

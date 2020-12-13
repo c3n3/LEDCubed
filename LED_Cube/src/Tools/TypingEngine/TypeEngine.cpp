@@ -61,9 +61,9 @@ Relativistic::Directions TypeEngine::getDirection(uint8_t charPosition) {
 void TypeEngine::drawChar(char c, int x1, int y1, int z1, Relativistic::Directions viewpoint, uint16_t color)
 {
     uint16_t letter = font[getFontIndex(c)];
-    for (int i = 0; i < 3; i++)
+    for (int j = 4; j >= 0; j--)
     {
-        for (int j = 0; j < 5; j++)
+        for (int i = 0; i < 3; i++)
         {
             bool on = letter & 0x8000; // get the last bit
             letter = letter << 1;      // shift to the left to get the next bit

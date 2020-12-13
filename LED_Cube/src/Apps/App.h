@@ -21,7 +21,7 @@ protected:
     bool characterInput();
     
     // this is the function that signifies a single 'frame' of an app. ie it is run every loop cycle
-    // THis is the most important function as this is where YOU right your code to make an app
+    // This is the most important function as this is where YOU right your code to make an app
     // this is also not pure virtual so that if someone wants to overide the run() function they can and not impliment a fake frame() function
     virtual bool frame();
 

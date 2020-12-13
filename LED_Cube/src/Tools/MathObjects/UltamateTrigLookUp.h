@@ -29,7 +29,7 @@ struct SinLookUpTable {
         }
     }
 
-    // gets the actual sine value as a decimal from the table. NO promises that this is faster than just using sin() that testing has yet to be done
+    // gets the actual sine value as a decimal from the table. NO promises that this is faster than just using sin(), that testing has yet to be done
     float operator() (T i) {
         i = i % N;
         return (table[i] - N / 2.0f) / (N / 2.0f);

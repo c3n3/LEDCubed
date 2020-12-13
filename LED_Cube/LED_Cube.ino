@@ -31,16 +31,12 @@ volatile uint16_t    px_buf[NUM_LEDS];   //Pixel buffer storing each LED color a
 // just no, no, no. This must be exterminated
 uint16_t white = 0xFFFF;
 
-// this too, use Input::keyboard
-PS2Keyboard keyboard;
-
 // setup function
 void setup()
 {
     delay(1000);
 
     // only one will be victorious....
-    keyboard.begin(15, 21);
     Input::keyboard.begin(15, 21);
 
     delay(200);
@@ -76,9 +72,9 @@ void loop()
     // in regards to the use of new, we do not need to worry about leaking memory because this will last till the thing is turned off.
     // Could possibly optimise memory by not allocating all apps at once, but will need a new mechinism
     App* stuff[appElements] = {
-        new Snake(), new Dodge(), new Pong(), new Snow(), new Swirl(), new Space(), new Swirl(), new RandomParticles(), new Minesweeper()
+        new Snake(), new Dodge(), new Pong(), new Snow(), new Swirl(), new Space(), new Wave(), new RandomParticles(), new Minesweeper()
     };
-    App* screenSaver[screenSaverElements] = {stuff[3], stuff[4], stuff[5], stuff[6], stuff[7]};
+    App* screenSaver[screenSaverElements] = {stuff[3], stuff[4], stuff[3], stuff[4], stuff[3]};
 
     // creation of the menu application 
     Menu menu = Menu(((App**)stuff), appElements, (App**)screenSaver, screenSaverElements);

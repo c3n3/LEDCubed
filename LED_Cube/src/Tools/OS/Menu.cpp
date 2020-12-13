@@ -9,7 +9,7 @@ Menu::Menu(App **theApps, uint8_t m1, App** screenSavers, uint8_t m2)
 }
 void Menu::run()
 {
-    asleep->go(15000);
+    // asleep->go(15000);
     while (true)
     {
         char c;

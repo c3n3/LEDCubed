@@ -1,7 +1,7 @@
 #ifndef TYPE
 #define TYPE
 /**
- * @brief This file must be killed and banish from existance. it is evil in 75 ways and that is a good enough argument
+ * @brief This file must be killed and banished from existance. it is evil in 75 ways and that is a good enough argument
  * 
  */
 

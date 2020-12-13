@@ -3,6 +3,7 @@
 #include "../../../src/LED_Cube_library/Basic_Functions.h"
 #include "../../../src/LED_Cube_library/Helpful_Functions.h"
 #include "../../../src/Tools/RelativeCoordinates/Relativistic.h"
+#include "../../../src/Tools/Input/Input.h"
 #include "../App.h"
 class Swirl: public App
 {
@@ -22,9 +23,9 @@ void Swirl::run(uint32_t time, bool timed)
     {
         char c;
 
-        if (keyboard.available())
+        if (Input::available())
         {
-            c = keyboard.read();
+            c = Input::read();
             if (c == PS2_ESC)
             {
                 break;

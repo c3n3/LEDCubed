@@ -2,6 +2,7 @@
 #define SNOW
 #include "../../../src/LED_Cube_library/Basic_Functions.h"
 #include "../../../src/LED_Cube_library/Helpful_Functions.h"
+#include "../../../src/Tools/Input/Input.h"
 #include "../App.h"
 
 class Snow: public App
@@ -19,9 +20,9 @@ void Snow::run(uint32_t time, bool timed)
     while (!timed || millis() - timerTotal < time)
     {
         char c;
-        if (keyboard.available())
+        if (Input::available())
         {
-            c = keyboard.read();
+            c = Input::read();
             if (c == PS2_ESC)
             {
                 break;
