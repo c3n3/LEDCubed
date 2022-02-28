@@ -25,6 +25,7 @@ volatile uint16_t    px_buf[NUM_LEDS];   //Pixel buffer storing each LED color a
 #include "src/LED_Cube_library/globals.h"
 #include "src/Tools/OS/Menu.h"
 #include "src/Apps/App_Includes.h"
+#include "src/Apps/Animations/Wave2.0.h"
 #include "src/Apps/App.h"
 #include "src/Tools/MathObjects/UltamateTrigLookUp.h"
 
@@ -65,19 +66,20 @@ void setup()
  **************************************************************************/
 void loop()
 {
-    // dont forget this when adding apps
-    const uint8_t appElements = 9;
-    const uint8_t screenSaverElements = 5;
-
-    // in regards to the use of new, we do not need to worry about leaking memory because this will last till the thing is turned off.
-    // Could possibly optimise memory by not allocating all apps at once, but will need a new mechinism
-    App* stuff[appElements] = {
-        new Snake(), new Dodge(), new Pong(), new Snow(), new Swirl(), new Space(), new Wave(), new RandomParticles(), new Minesweeper()
+    // TypeEngine::autoTypeUpper("Hello jacob", 0x003F, 0xFD00); 
+    // TypeEngine::autoTypeLower("    this is test", 0x000F, 0xF000); 
+    // delay(1000);
+    // return;
+    // App* app = App::Ctor<Snow>();
+    // app->run();
+    AppCtor stuff[] = {
+        App::Ctor<Wave>, App::Ctor<Swirl>, App::Ctor<Wave>, App::Ctor<Space>, App::Ctor<Snow>
     };
-    App* screenSaver[screenSaverElements] = {stuff[3], stuff[4], stuff[3], stuff[4], stuff[3]};
-
+    AppCtor Apps[] = {
+        App::Ctor<Snake>, App::Ctor<Dodge>
+    };
+     AppCtor* screenSaver = stuff;
     // creation of the menu application 
-    Menu menu = Menu(((App**)stuff), appElements, (App**)screenSaver, screenSaverElements);
-
+     Menu menu = Menu(Apps, 2, screenSaver, 5);
     menu.run(); // thats all folks
 } //end loop

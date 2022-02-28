@@ -8,14 +8,14 @@ class RandomParticles: public App
 private:
     Particle* particles; // array of particle pointers
 protected:
-    bool init();
+    App::Resut init();
     void end();
 public:
     String title = "Particles";
-    bool frame();
+    App::Resut frame();
 };
 
-bool RandomParticles::init() {
+App::Resut RandomParticles::init() {
     particles = (Particle*)malloc(sizeof(Particle) * 10);
     for (int i = 0; i < 10; i++) {
         // create a bunch of bouncy particles with random everything
@@ -25,15 +25,15 @@ bool RandomParticles::init() {
             Vector<float>((rand() % 2) * 1.0, (rand() % 2) * 1.0, (rand() % 2) *1.0), 
             100, Particle::BOUNCE);
     }
-    return CONTINUE_PROGRAM;
+    return App::CONTINUE;
 }
 
-bool RandomParticles::frame() {
+App::Resut RandomParticles::frame() {
     for (int i = 0; i < 10; i++) {
         particles[i].updatePosition();
         particles[i].drawSelf();
     }
-    return CONTINUE_PROGRAM;
+    return App::CONTINUE;
 }
 
 void RandomParticles::end() {

@@ -2,6 +2,7 @@
 #include "../App.h"
 #include "../../../src/LED_Cube_library/Basic_Functions.h"
 #include "../../../src/LED_Cube_library/Helpful_Functions.h"
+#include "../../../src/Tools/Input/Input.h"
 #include "../../Tools/RelativeCoordinates/Relativistic.h"
 class Space : public App
 {
@@ -19,23 +20,27 @@ private:
 
     bool speedUp;
     bool sustain;
+    App::Resut init() {
+        return App::CONTINUE;
+    }
     void moveAll()
     {
         for (int x = 0; x < 12; x++)
         {
             for (int y = 0; y < 12; y++)
             {
-                for (int z = 0; z < 12; z++)
-                {
-                    help::moveRow(x, y, current, 1); // move all colors
-                }
+                help::moveRow(x, y, Relativistic::UP, 1); // move all colors
             }
         }
     };
 
     void randomLEDs()
     {
-        help::setRandomLED(ledDensity, current, rand() % 0xFFFF);
+        if (rand() % 25 != 1) {
+            help::setRandomLED(ledDensity, Relativistic::UP, pk_color(rand() % 100, rand() % 100, rand() % 100));
+        } else {
+            help::setRandomLED(ledDensity, Relativistic::UP, rand() % 0xFFFF);
+        }
     };
 
     void getNextInterval()
@@ -49,42 +54,19 @@ private:
     };
 
 protected:
-    bool frame()
+    App::Resut frame()
     {
-        if (sustain && (millis() - timer > peakSustain))
+        if (millis() - timer > 50)
         {
-            if (sustain)
-            {
-                timer += peakSustain;
-                sustain = false;
-            }
-            if (millis() - timer > intervalAcceleration)
-            {
-                randomLEDs();
-                moveAll();
-                if (interval > intervalMax && speedUp == false)
-                {
-                    speedUp = true;
-                }
-                else if (interval < intervalMin && speedUp)
-                {
-                    speedUp = false;
-                }
-                else if ((speedUp == true && interval > intervalMax) || (speedUp == false && interval < intervalMin))
-                {
-                    sustain = true;
-                }
-                else
-                {
-                    getNextInterval();
-                }
-                timer += intervalJump;
-            }
-        }
-        return CONTINUE_PROGRAM; // this thing always continues
+            moveAll();
+            randomLEDs();
+            timer += 50;
+        } 
+        return App::CONTINUE; // this thing always continues
     };
 
 public:
+
     Space()
     {
         speedUp = true;

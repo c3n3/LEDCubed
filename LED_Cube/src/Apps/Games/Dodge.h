@@ -8,11 +8,11 @@ class Dodge: public App
 {
 public:
     const String title = "Dodge";
-    void run(uint32_t time = 0, bool timed = false);
+    App::Resut run(uint32_t time = 0, bool timed = false);
 };
 
 
-void Dodge::run(uint32_t time, bool timed)
+App::Resut Dodge::run(uint32_t time, bool timed)
 {
 
     uint32_t timer0 = millis();
@@ -22,7 +22,7 @@ void Dodge::run(uint32_t time, bool timed)
     boolean start = false;
     clearCube();
     uint32_t timer = millis();
-
+    App::Resut res = TIMER_STOP;
     while (!timed || millis() - timer < time)
     {
 
@@ -56,6 +56,7 @@ void Dodge::run(uint32_t time, bool timed)
             c = keyboard.read();
             if (c == PS2_ESC)
             {
+                res = App::KEYBOARD_STOP;
                 break;
             }
         }
@@ -123,6 +124,7 @@ void Dodge::run(uint32_t time, bool timed)
         }
     }
     clearCube();
+    return res;
 }
 
 #endif

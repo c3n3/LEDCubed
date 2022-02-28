@@ -1,6 +1,6 @@
 #include "MicrosoftWord.h"
 
-bool MicrosoftWord::frame()
+App::Resut MicrosoftWord::frame()
 {
     if (c == PS2_ENTER)
     {
@@ -17,5 +17,5 @@ bool MicrosoftWord::frame()
             TypeEngine::typeUpper(c, TypeEngine::getUpperCharCount() % 2 == 0 ? color1 : color2);
         }
     }
-    return CONTINUE_PROGRAM;
+    return App::CONTINUE;
 };

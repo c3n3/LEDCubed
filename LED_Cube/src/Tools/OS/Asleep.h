@@ -11,7 +11,7 @@ class Asleep
 {
 private:
     // the apps as an array of pointers
-    App** apps;
+    AppCtor* apps;
 
     // the size of the above array
     uint8_t size;
@@ -23,7 +23,7 @@ public:
      * @param arr the array of apps
      * @param size the size of the arr
      */
-    Asleep(App** arr, uint8_t size);
+    Asleep(AppCtor* arr, uint8_t size);
 
     // this is the run function, bassically just goes through the apps 
     void go(uint32_t times = 0);

@@ -1,4 +1,6 @@
 #include "Snake.h"
+#include "../../Tools/TypingEngine/TypeEngine.h"
+#include "../../../src/Tools/Input/Input.h"
 
 void Snake::end(int score)
 {
@@ -11,10 +13,7 @@ void Snake::end(int score)
             {
                 for (int i = 0; i < 12; i++)
                 {
-                    if (LEDArray(i, k, j) == 0)
-                    {
-                        set_led_pk(i, j, k, 0xF800);
-                    }
+                    set_led_pk(i, j, k, 0xF800);
                 }
             }
         }
@@ -22,7 +21,8 @@ void Snake::end(int score)
         clearCube();
         d(250);
     }
-    //  gameOverScore(score);
+    TypeEngine::drawChar('0' + (score % 10), 4,6,1,Relativistic::FORWARD, 0xFFFF);
+    TypeEngine::drawChar('0' + ((score / 10) % 10), 0,6,1,Relativistic::FORWARD, 0xFFFF);
 }
 
 uint16_t Snake::colorShifter(uint16_t currentColor)
@@ -116,7 +116,7 @@ void Snake::MoveLED(uint8_t x, uint8_t y, uint8_t z, uint16_t currentColor, bool
     }
 }
 
-void Snake::run(uint32_t time, bool timed)
+App::Resut Snake::run(uint32_t time, bool timed)
 {
     boolean start = false;
     uint16_t color = 0xFFFF;
@@ -129,6 +129,7 @@ void Snake::run(uint32_t time, bool timed)
     uint8_t z2 = 6;
     uint16_t speed = 500;
     uint16_t length = 4;
+    uint16_t length2 = 4;
     Relativistic::Directions direction = Relativistic::FORWARD;
     uint32_t foodTimer = millis();
     uint32_t moveTimer = millis();
@@ -136,16 +137,18 @@ void Snake::run(uint32_t time, bool timed)
     coord_t food[NUM_FOOD];
     boolean endGame = false;
     uint32_t timer = millis();
-
+    App::Resut res = App::STOP;
+    clearCube();
     while (!timed || millis() - timer < time)
     {
         char c = ']';
 
-        if (keyboard.available())
+        if (Input::available())
         {
-            c = keyboard.read();
+            c = Input::read();
             if (c == PS2_ESC)
             {
+                res = App::KEYBOARD_STOP;
                 break;
             }
 
@@ -230,14 +233,10 @@ void Snake::run(uint32_t time, bool timed)
             direction = Relativistic::RIGHT;
             break;
         case '0':
-            direction = Relativistic::DOWN;
-            break;
         case 'f':
             direction = Relativistic::DOWN;
             break;
         case 'r':
-            direction = Relativistic::UP;
-            break;
         case '1':
             direction = Relativistic::UP;
             break;
@@ -284,7 +283,6 @@ void Snake::run(uint32_t time, bool timed)
                 case Relativistic::RIGHT:
                     x++;
                     break;
-
                 default:
                     break;
                 }
@@ -302,15 +300,16 @@ void Snake::run(uint32_t time, bool timed)
                             if (LEDArray(food[i].x, food[i].y, food[i].z) == 0)
                             {
                                 length++;
+                                length2++;
                                 break;
                             }
                         }
                     }
                 }
-                if ((LEDArray(x, y, z) != 0 && addLength) != true || (x - 1 >= 11 || y - 1 >= 11 || z - 1 >= 11))
+                if (((LEDArray(x, y, z) == 0 || addLength) == false) || (x - 1 >= 11 || y - 1 >= 11 || z - 1 >= 11))
                 {
                     endGame = true;
-                    end(length - 4);
+                    end(length2 - 4);
                 }
                 else
                 {
@@ -323,4 +322,6 @@ void Snake::run(uint32_t time, bool timed)
             }
         }
     }
+    clearCube();
+    return res;
 }

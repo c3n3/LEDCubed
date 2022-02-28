@@ -14,8 +14,8 @@ private:
 
 public:
     const String title = "Snake";
-    void run(uint32_t time = 0, bool timed = false);
-    ~Snake();
+    App::Resut run(uint32_t time = 0, bool timed = false);
+    // ~Snake();
 };
 
 #endif

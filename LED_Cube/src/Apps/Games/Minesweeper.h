@@ -207,7 +207,7 @@ public:
         }
     }
 
-    bool init(/* args */) {
+    App::Resut init(/* args */) {
         for (int i = 0; i < MINE_COUNT; i++) {
             mines[i] = Vector<ui8>(rand() % CUBE_LENGTH, rand() % CUBE_LENGTH, 0);
         }
@@ -219,7 +219,7 @@ public:
         bool cont = characterInput();
         while (c != PS2_ENTER) {
             if (!cont) {
-                return STOP_PROGRAM;
+                return App::KEYBOARD_STOP;
             }
 
             if (c == PS2_LEFTARROW) {
@@ -240,10 +240,10 @@ public:
 
             cont = characterInput();
         }
-        return CONTINUE_PROGRAM;
+        return App::CONTINUE;
     };
 
-    bool frame() {
+    App::Resut frame() {
         if (win) {
             TypeEngine::autoTypeUpper("win", 0x001F, 0xF800);
         }
@@ -257,7 +257,7 @@ public:
         else {
             drawMines();
         }
-        return CONTINUE_PROGRAM;
+        return App::CONTINUE;
     }
     void end() {
         delete bank;

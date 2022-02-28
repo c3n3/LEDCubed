@@ -1,6 +1,6 @@
 #include "Menu.h"
 #include "../../Tools/TypingEngine/TypeEngine.h"
-Menu::Menu(App **theApps, uint8_t m1, App** screenSavers, uint8_t m2)
+Menu::Menu(AppCtor *theApps, uint8_t m1, AppCtor* screenSavers, uint8_t m2)
 {
     
     max = m1;
@@ -9,7 +9,7 @@ Menu::Menu(App **theApps, uint8_t m1, App** screenSavers, uint8_t m2)
 }
 void Menu::run()
 {
-    // asleep->go(15000);
+    asleep->go(60000);
     while (true)
     {
         char c;
@@ -37,11 +37,14 @@ void Menu::run()
 
             if (c == PS2_ENTER)
             {
-                (*apps[current]).run();
+                // (*apps[current]).run();
+                App* cur = apps[current]();
+                cur->run();
+                delete cur;
             }
             TypeEngine::drawChar(current + '0', 5, 5, 0, Relativistic::FORWARD, 0xFFFF);
-            TypeEngine::drawChar(current + '0', 6, 5, 1, Relativistic::FORWARD, 0xFFFF);
-            TypeEngine::autoTypeLower((*apps[current]).title, 0x001F, 0xFFE0, true);
+            TypeEngine::drawChar(current + '0', 5, 5, 1, Relativistic::FORWARD, 0xFFFF);
+            //TypeEngine::autoTypeLower((*apps[current]).title, 0x001F, 0xFFE0, true);
             c = '\0';
         }
     }

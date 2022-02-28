@@ -12,7 +12,7 @@ private:
     uint16_t color1 = 0xFFE0;
     uint16_t color2 = 0x001F;
 protected:
-    bool frame();
+    App::Resut frame();
 public:
     const String title = "Word";
 };

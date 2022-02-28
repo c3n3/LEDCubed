@@ -24,6 +24,17 @@ void protected_set_led_pk( uint8_t x, uint8_t y, uint8_t z, uint16_t c){
     }
 }
 
+// will not destroy the program if you set a nonexistant LED
+void lim_set_led_pk( uint8_t x, uint8_t y, uint8_t z, uint16_t c){
+    if (x > 100) x = 0;
+    if (y > 100) y = 0;
+    if (z > 100) z = 0;
+    if (x > 11) x = 11;
+    if (y > 11) y = 11;
+    if (z > 11) z = 11;
+    px_buf[ z * NUM_LEDS_LYR + NUM_LEDS_DIM * x + y]  = c;
+}
+
 // a delay function that accounts for pressing the escape key
 char d(uint16_t t){
     uint32_t temp = millis();

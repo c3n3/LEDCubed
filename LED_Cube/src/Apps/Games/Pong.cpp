@@ -108,7 +108,7 @@ Pong::State Pong::findNextState()
     return Playing;
 }
 
-void Pong::run(uint32_t time, bool timed)
+App::Resut Pong::run(uint32_t time, bool timed)
 {
     timer = millis();
     uint32_t intervalTimer = 0;            // timer used to delay the ball movement
@@ -123,7 +123,7 @@ void Pong::run(uint32_t time, bool timed)
     {
         if (!characterInput())
         { // remember characterInput is the fuction that sets c and returns if it is not escape
-            return;
+            return App::KEYBOARD_STOP;
         }
 
         // Allow player movement
@@ -162,6 +162,7 @@ void Pong::run(uint32_t time, bool timed)
         delete players[i];
     }
     delete[] players;
+    return App::STOP;
 }
 
 //-----------------------------------------------------------------------------------------------------------------------

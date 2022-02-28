@@ -9,16 +9,16 @@ class Swirl: public App
 {
 public:
     const String title = "Swril";
-    void run(uint32_t time = 0, bool timed = false);
+    App::Resut run(uint32_t time = 0, bool timed = false);
 };
 
-void Swirl::run(uint32_t time, bool timed)
+App::Resut Swirl::run(uint32_t time, bool timed)
 {
     boolean start = false;
     clearCube();
     uint32_t swirlTimer = millis();
     uint32_t timer = millis();
-
+    App::Resut res = App::TIMER_STOP;
     while (!timed || millis() - timer < time)
     {
         char c;
@@ -28,6 +28,7 @@ void Swirl::run(uint32_t time, bool timed)
             c = Input::read();
             if (c == PS2_ESC)
             {
+                res = App::KEYBOARD_STOP;
                 break;
             }
         }
@@ -70,6 +71,7 @@ void Swirl::run(uint32_t time, bool timed)
         }
     }
     clearCube();
+    return res;
 }
 
 #endif

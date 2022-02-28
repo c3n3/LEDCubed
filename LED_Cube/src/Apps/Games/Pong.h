@@ -29,7 +29,7 @@ public:
     class Player;
     Player** players;
     // decided to overide the run function for this one
-    void run(uint32_t time = 0, bool timed = false);
+    App::Resut run(uint32_t time = 0, bool timed = false);
     String title = "Pong";
 };
 

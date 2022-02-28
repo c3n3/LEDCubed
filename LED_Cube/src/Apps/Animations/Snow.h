@@ -9,14 +9,14 @@ class Snow: public App
 {
 public:
     const String title = "Snow";
-    void run(uint32_t time = 0, bool timed = false);
+    App::Resut run(uint32_t time = 0, bool timed = false);
 };
 
-void Snow::run(uint32_t time, bool timed)
+App::Resut Snow::run(uint32_t time, bool timed)
 {
     uint32_t timer = millis();
     uint32_t timerTotal = millis();
-
+    App::Resut res = App::TIMER_STOP;
     while (!timed || millis() - timerTotal < time)
     {
         char c;
@@ -25,6 +25,7 @@ void Snow::run(uint32_t time, bool timed)
             c = Input::read();
             if (c == PS2_ESC)
             {
+                res = App::KEYBOARD_STOP;
                 break;
             }
         }
@@ -78,6 +79,7 @@ void Snow::run(uint32_t time, bool timed)
         }
     }
     clearCube();
+    return res;
 }
 
 #endif

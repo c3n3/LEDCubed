@@ -15,10 +15,10 @@ private:
     Asleep* asleep;
 
     // array of apps
-    App** apps;
+    AppCtor* apps;
 
     // this is the screen savers to be used with the Asleep screen saver app (This can probably be moved to the constructor of the Asleep class, but I am lazy right now)
-    App** screenSaverApps;
+    AppCtor* screenSaverApps;
 
     // the size of the above array, no idea why I called it max
     uint8_t max;
@@ -31,7 +31,7 @@ public:
      * @param screenSavers array of screen saver apps
      * @param sizeSavers this is the size of the savers array
      */
-    Menu(App** apps, uint8_t sizeApps, App** screenSavers, uint8_t sizeSavers);
+    Menu(AppCtor* apps, uint8_t sizeApps, AppCtor* screenSavers, uint8_t sizeSavers);
 
     // the run function that loops till the end of time (aka when the electrons stop flowing)
     void run();

@@ -14,6 +14,8 @@ void set_led( uint8_t x, uint8_t y, uint8_t z, uint16_t r, uint16_t g, uint16_t 
 // will not destroy the program if you set a nonexistant LED
 void protected_set_led_pk( uint8_t x, uint8_t y, uint8_t z, uint16_t c);
 
+void lim_set_led_pk( uint8_t x, uint8_t y, uint8_t z, uint16_t c);
+
 // a delay function that accounts for pressing the escape key; maybe try to use an exception for this; no idea if c++ arduino can utilise exceptions
 char d(uint16_t t);
 
